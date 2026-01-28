@@ -90,15 +90,42 @@ def maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f,
 
     # Objective
     model.Maximize(
-        K_tot_star  # Maximize remaining production capacity after worst possible attack
+        K_tot_star # Maximize remaining production capacity after worst possible attack
     )
 
     # Solve
     solver = cp_model.CpSolver()
     status = solver.Solve(model)
+    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        return None, None, None, status
+    
+    # Tie-breaker
+    optimal_K_tot_star = solver.Value(K_tot_star)
+    model.Add(
+        K_tot_star == optimal_K_tot_star
+        ) # Fix K_tot_star to optimal value found
+    model.Maximize(
+        sum(K_f[f] * e_f[f] for f in range(F))
+    ) # Maximize total established production capacity as tie-breaker
+    status = solver.Solve(model)
+    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        return None, None, None, status
+
+    # Second tie-breaker
+    optimal_total_established_capacity = sum(K_f[f] * solver.Value(e_f[f]) for f in range(F))
+    model.Add(
+        sum(K_f[f] * e_f[f] for f in range(F)) == optimal_total_established_capacity
+    ) # Fix total established production capacity to optimal value found
+    model.Minimize(
+        sum(a_f[f] for f in range(F))
+    ) # Minimize total number of air defense missiles as second tie-breaker
+    status = solver.Solve(model)
+    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        return None, None, None, status
+
     estblished_f = [bool(solver.Value(e_f[f])) for f in range(F)]
     air_defense_f = [int(solver.Value(a_f[f])) for f in range(F)]
-    remaining_production_capacity = int(solver.ObjectiveValue())
+    remaining_production_capacity = int(solver.Value(K_tot_star))
     return estblished_f, air_defense_f, remaining_production_capacity, status
 
 def solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f, max_iters=1000, iteration_placeholder=None, iteration_detail=None):
