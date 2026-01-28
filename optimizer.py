@@ -104,21 +104,21 @@ def maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f,
     model.Add(
         K_tot_star == optimal_K_tot_star
         ) # Fix K_tot_star to optimal value found
-    model.Maximize(
-        sum(K_f[f] * e_f[f] for f in range(F))
-    ) # Maximize total established production capacity as tie-breaker
+    model.Minimize(
+        sum(a_f[f] for f in range(F))
+    ) # Minimize total number of air defense missiles as tie-breaker
     status = solver.Solve(model)
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return None, None, None, status
 
     # Second tie-breaker
-    optimal_total_established_capacity = sum(K_f[f] * solver.Value(e_f[f]) for f in range(F))
+    optimal_total_air_defense = sum(solver.Value(a_f[f]) for f in range(F))
     model.Add(
-        sum(K_f[f] * e_f[f] for f in range(F)) == optimal_total_established_capacity
-    ) # Fix total established production capacity to optimal value found
-    model.Minimize(
-        sum(a_f[f] for f in range(F))
-    ) # Minimize total number of air defense missiles as second tie-breaker
+        sum(a_f[f] for f in range(F)) == optimal_total_air_defense
+    ) # Fix total number of air defense missiles to optimal value found
+    model.Maximize(
+        sum(K_f[f] * e_f[f] for f in range(F))
+    ) # Maximize total established production capacity as second tie-breaker
     status = solver.Solve(model)
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return None, None, None, status
