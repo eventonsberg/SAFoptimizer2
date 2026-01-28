@@ -2,7 +2,8 @@ import streamlit as st
 from optimizer import solve_interdiction
 from varying_missile_budget_visualization import (
     plot_remaining_production_capacity_vs_missile_budget,
-    plot_facility_configuration_vs_missile_budget
+    plot_facility_configuration_vs_missile_budget,
+    plot_costs_vs_missile_budget
 )
 
 def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f, C_f):
@@ -33,6 +34,8 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
     chart1_placeholder = st.empty()
     chart2_title_placeholder = st.empty()
     chart2_placeholder = st.empty()
+    chart3_title_placeholder = st.empty()
+    chart3_placeholder = st.empty()
     if st.session_state.varying_missile_budget_results:
         with chart1_placeholder:
             chart1_title_placeholder.subheader("Gjenværende produksjonskapasitet etter angrep")
@@ -40,6 +43,9 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
         with chart2_placeholder:
             chart2_title_placeholder.subheader("Fabrikkonfigurasjon")
             plot_facility_configuration_vs_missile_budget(type_f)
+        with chart3_placeholder:
+            chart3_title_placeholder.subheader("Kostnader")
+            plot_costs_vs_missile_budget(B_B, C_f, C_A)
 
     if run_optimization:
         if min_budget > max_budget:
@@ -62,3 +68,6 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
             with chart2_placeholder:
                 chart2_title_placeholder.subheader("Fabrikkonfigurasjon")
                 plot_facility_configuration_vs_missile_budget(type_f)
+            with chart3_placeholder:
+                chart3_title_placeholder.subheader("Kostnader")
+                plot_costs_vs_missile_budget(B_B, C_f, C_A)

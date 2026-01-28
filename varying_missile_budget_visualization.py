@@ -63,7 +63,7 @@ def plot_facility_configuration_vs_missile_budget(type_f):
         ),
         color=alt.Color(
             "Fabrikktype:N",
-            title="",
+            title="Fabrikktype",
             legend=alt.Legend(orient="bottom")
         ),
         order=alt.Order("Ødelagt:O", sort="ascending"),
@@ -72,7 +72,7 @@ def plot_facility_configuration_vs_missile_budget(type_f):
             scale=alt.Scale(domain=[True, False],
                             range=["fuchsia", "transparent"]
             ),
-            legend=alt.Legend(title="",
+            legend=alt.Legend(title="Status",
                               orient="bottom",
                               values=[True],
                               labelExpr="'Fabrikk ødelagt'"
@@ -105,3 +105,51 @@ def plot_facility_configuration_vs_missile_budget(type_f):
     )
     chart = bar + text
     st.altair_chart(chart, width="stretch")
+
+def plot_costs_vs_missile_budget(B_B, C_f, C_A):
+    results = st.session_state.varying_missile_budget_results
+    missile_budget = []
+    facility_and_air_defence_budget = []
+    facility_costs = []
+    air_defense_costs = []
+    total_costs = []
+    for B_R, result in results.items():
+        missile_budget.append(B_R)
+        facility_and_air_defence_budget.append(B_B)
+        facility_cost = sum(C_f[f] for f, est in enumerate(result["established_facilities"]) if est)
+        facility_costs.append(facility_cost)
+        air_defense_cost = sum(C_A * a_f for f, a_f in enumerate(result["air_defense_assignment"]))
+        air_defense_costs.append(air_defense_cost)
+        total_costs.append(facility_cost + air_defense_cost)
+    df = pd.DataFrame({
+        "Missilbudsjett": missile_budget,
+        "Budsjett": facility_and_air_defence_budget,
+        "Fabrikkostnader": facility_costs,
+        "Luftvernkostnader": air_defense_costs,
+        "Totale kostnader": total_costs
+    })
+    df_melted = df.melt(id_vars=["Missilbudsjett"], 
+                        value_vars=["Budsjett", "Fabrikkostnader", "Luftvernkostnader", "Totale kostnader"],
+                        var_name="Kostnadstype",
+                        value_name="Kostnad"
+    )
+    chart = alt.Chart(df_melted).mark_line(
+        point=True
+    ).encode(
+        x=alt.X(
+            "Missilbudsjett:O",
+            title="Missilbudsjett",
+            axis=alt.Axis(labelAngle=0, grid=True)
+        ),
+        y=alt.Y(
+            "Kostnad:Q",
+            title="Kostnad [MNOK]"
+        ),
+        color=alt.Color(
+            "Kostnadstype:N",
+            title="Kostnadstype",
+            legend=alt.Legend(orient="bottom")
+        ),
+        tooltip=["Missilbudsjett", "Kostnadstype", "Kostnad"],
+    )
+    st.altair_chart(chart)
