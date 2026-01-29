@@ -36,12 +36,16 @@ def plot_facility_configuration_vs_missile_budget(type_f):
         established = result["established_facilities"]
         air_defense = result["air_defense_assignment"]
         destroyed = result["attack_scenario"]
+        type_counters = {}
         for idx, (t, est, ad, dest) in enumerate(zip(type_f, established, air_defense, destroyed)):
+            if t not in type_counters:
+                type_counters[t] = 0
+            type_counters[t] += 1
             if est:
                 data.append({
                     "Missilbudsjett": budget,
                     "Fabrikktype": t,
-                    "FabrikkID": f"{t} #{idx+1}",
+                    "FabrikkID": f"{t} #{type_counters[t]}",
                     "Antall etablert": 1,
                     "Luftvern": ad,
                     "Ødelagt": dest
@@ -100,7 +104,8 @@ def plot_facility_configuration_vs_missile_budget(type_f):
                 "LabelPos:Q"
             ),
             detail="FabrikkID:N",
-            text=alt.Text("Luftvern:N")
+            text=alt.Text("Luftvern:N"),
+            tooltip=["Missilbudsjett", "FabrikkID", "Luftvern", "Ødelagt"]
         )
     )
     chart = bar + text
