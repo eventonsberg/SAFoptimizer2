@@ -24,6 +24,14 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
             min_value=0,
             format="%d"
         )
+    budget_step = st.number_input(
+        "Steglengde",
+        value=1,
+        step=1,
+        min_value=1,
+        format="%d",
+        key="budget_step_tab2"
+    )
 
     if "varying_missile_budget_results" not in st.session_state:
         st.session_state.varying_missile_budget_results = {}
@@ -44,7 +52,7 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
         if min_budget > max_budget:
             st.error("Minimum missilbudsjett kan ikke være større enn maksimum missilbudsjett.")
             return
-        missile_budget_values = list(range(min_budget, max_budget + 1))
+        missile_budget_values = list(range(min_budget, max_budget + 1, budget_step))
         st.session_state.varying_missile_budget_results = {}
         for B_R in missile_budget_values:
             result = solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f,

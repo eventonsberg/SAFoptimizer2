@@ -25,11 +25,12 @@ def display_varying_f_and_ad_budget(P_A, C_A, A_max, B_R, _, F, type_f, K_f, H_f
             format="%d"
         )
     budget_step = st.number_input(
-        "Budsjettsteg",
+        "Steglengde",
         value=50,
         step=1,
         min_value=1,
-        format="%d"
+        format="%d",
+        key="budget_step_tab3"
     )
 
     if "varying_f_and_ad_budget_results" not in st.session_state:
