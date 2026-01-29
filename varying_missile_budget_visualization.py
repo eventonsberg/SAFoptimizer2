@@ -11,7 +11,7 @@ def plot_remaining_production_capacity_vs_missile_budget():
         remaining_capacities.append(result["remaining_production_capacity_after_attack"])
     df = pd.DataFrame({
         "Missilbudsjett": missile_budgets,
-        "Gjenværende produksjonskapasitet": remaining_capacities
+        "Produksjonskapasitet": remaining_capacities
     })
     chart = alt.Chart(df).mark_line(
         point=True
@@ -22,10 +22,10 @@ def plot_remaining_production_capacity_vs_missile_budget():
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
-            "Gjenværende produksjonskapasitet:Q",
+            "Produksjonskapasitet:Q",
             title="Produksjonskapasitet [m³/dag]"
         ),
-        tooltip=["Missilbudsjett", "Gjenværende produksjonskapasitet"],
+        tooltip=["Missilbudsjett", "Produksjonskapasitet"],
     )
     st.altair_chart(chart)
 
