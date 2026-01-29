@@ -30,17 +30,13 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
 
     run_optimization = st.button("Kjør optimering", type="primary", key="run_varying_missile_budget")
     iteration_placeholder = st.empty()
-    chart1_placeholder = st.empty()
-    chart2_placeholder = st.empty()
-    chart3_placeholder = st.empty()
+    chart_placeholder = st.empty()
     if st.session_state.varying_missile_budget_results:
-        with chart1_placeholder.container():
+        with chart_placeholder.container():
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
             plot_remaining_production_capacity_vs_missile_budget()
-        with chart2_placeholder.container():
             st.subheader("Fabrikkonfigurasjon")
             plot_facility_configuration_vs_missile_budget(type_f)
-        with chart3_placeholder.container():
             st.subheader("Kostnader")
             plot_costs_vs_missile_budget(B_B, C_f, C_A)
 
@@ -59,12 +55,10 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
                 st.error(f"Optimeringen feilet for missilbudsjett {B_R} med status: {result['status']}")
                 continue
             st.session_state.varying_missile_budget_results[B_R] = result
-            with chart1_placeholder.container():
+            with chart_placeholder.container():
                 st.subheader("Gjenværende produksjonskapasitet etter angrep")
                 plot_remaining_production_capacity_vs_missile_budget()
-            with chart2_placeholder.container():
                 st.subheader("Fabrikkonfigurasjon")
                 plot_facility_configuration_vs_missile_budget(type_f)
-            with chart3_placeholder.container():
                 st.subheader("Kostnader")
                 plot_costs_vs_missile_budget(B_B, C_f, C_A)
