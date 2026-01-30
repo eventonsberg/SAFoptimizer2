@@ -77,16 +77,17 @@ def maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f,
         sum(C_f[f] * e_f[f] + C_A * a_f[f] for f in range(F)) <= B_B  # Facility and air defense budget constraint
     )
 
+    # Symmetry breaking
     type_f_prev = type_f[0]
     for f in range(1, F):
         if type_f[f] != type_f_prev:
             type_f_prev = type_f[f]
             continue
         model.Add(
-            e_f[f] <= e_f[f - 1]  # Symmetry breaking: establish facilities of the same type in order
+            e_f[f] <= e_f[f - 1]  # Establish facilities of the same type in order
         )
         model.Add(
-            a_f[f] <= a_f[f - 1]  # Symmetry breaking: assign air defense missiles in order
+            a_f[f] <= a_f[f - 1]  # Assign air defense missiles in order
         )
 
     # Objective

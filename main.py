@@ -1,4 +1,5 @@
 import streamlit as st
+from model_description import display_model_description
 from input_data import display_input_fields, format_model_inputs
 from single_solution import display_single_solution
 from varying_missile_budget import display_varying_missile_budget
@@ -9,6 +10,8 @@ st.set_page_config(
     page_title="SAF optimizer",
     page_icon=":material/travel:"
 )
+
+display_model_description()
 
 input_data = display_input_fields()
 model_inputs = format_model_inputs(input_data)
