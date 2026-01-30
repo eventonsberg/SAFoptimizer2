@@ -89,7 +89,8 @@ def display_varying_missile_budget_vs_f_and_ad_budget(P_A, C_A, A_max, _B_R, _B_
             for B_B in f_and_ad_budget_values:
                 result = solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f,
                                             iteration_placeholder=iteration_placeholder,
-                                            iteration_detail=f"Missilbudsjett: {B_R}, Fabrikk- og luftvernbudsjett: {B_B}"
+                                            iteration_detail=f"Missilbudsjett: {B_R}, Fabrikk- og luftvernbudsjett: {B_B}",
+                                            with_tie_breakers=False
                 )
                 if result["status"] != "OPTIMAL":
                     st.error(f"Optimeringen feilet for missilbudsjett {B_R} og fabrikk- og luftvernbudsjett {B_B} med status: {result['status']}")

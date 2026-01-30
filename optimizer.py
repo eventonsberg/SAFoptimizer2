@@ -41,7 +41,8 @@ def minimize_production_capacity(P_A, B_R, F, K_f, e_f, H_f, a_f):
     production_capacity = int(solver.ObjectiveValue())
     return destroyed_f, missile_cost_f, production_capacity
 
-def maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f, scenarios):
+def maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f,
+                                           scenarios, with_tie_breakers=True):
     # Model
     model = cp_model.CpModel()
 
@@ -99,36 +100,39 @@ def maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f,
     if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         return None, None, None, status
     
-    # Tie-breaker
-    optimal_K_tot_star = solver.Value(K_tot_star)
-    model.Add(
-        K_tot_star == optimal_K_tot_star
-        ) # Fix K_tot_star to optimal value found
-    model.Minimize(
-        sum(a_f[f] for f in range(F))
-    ) # Minimize total number of air defense missiles as tie-breaker
-    status = solver.Solve(model)
-    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        return None, None, None, status
+    if with_tie_breakers:
+        # Tie-breaker
+        optimal_K_tot_star = solver.Value(K_tot_star)
+        model.Add(
+            K_tot_star == optimal_K_tot_star
+            ) # Fix K_tot_star to optimal value found
+        model.Minimize(
+            sum(a_f[f] for f in range(F))
+        ) # Minimize total number of air defense missiles as tie-breaker
+        status = solver.Solve(model)
+        if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+            return None, None, None, status
 
-    # Second tie-breaker
-    optimal_total_air_defense = sum(solver.Value(a_f[f]) for f in range(F))
-    model.Add(
-        sum(a_f[f] for f in range(F)) == optimal_total_air_defense
-    ) # Fix total number of air defense missiles to optimal value found
-    model.Maximize(
-        sum(K_f[f] * e_f[f] for f in range(F))
-    ) # Maximize total established production capacity as second tie-breaker
-    status = solver.Solve(model)
-    if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
-        return None, None, None, status
+        # Second tie-breaker
+        optimal_total_air_defense = sum(solver.Value(a_f[f]) for f in range(F))
+        model.Add(
+            sum(a_f[f] for f in range(F)) == optimal_total_air_defense
+        ) # Fix total number of air defense missiles to optimal value found
+        model.Maximize(
+            sum(K_f[f] * e_f[f] for f in range(F))
+        ) # Maximize total established production capacity as second tie-breaker
+        status = solver.Solve(model)
+        if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+            return None, None, None, status
 
     estblished_f = [bool(solver.Value(e_f[f])) for f in range(F)]
     air_defense_f = [int(solver.Value(a_f[f])) for f in range(F)]
     remaining_production_capacity = int(solver.Value(K_tot_star))
     return estblished_f, air_defense_f, remaining_production_capacity, status
 
-def solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f, max_iters=1000, iteration_placeholder=None, iteration_detail=None):
+def solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f,
+                       max_iters=1000, iteration_placeholder=None, iteration_detail=None,
+                       with_tie_breakers=True):
     scenarios = [] # List of attack scenarios
     history = [] # Iteration history
     for it in range(max_iters):
@@ -137,7 +141,8 @@ def solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f, max_
                 iteration_placeholder.markdown(f":red-badge[{iteration_detail} :material/arrow_forward: Iterasjon: {it}]")
             else:
                 iteration_placeholder.markdown(f":red-badge[Iterasjon: {it}]")
-        e_f, a_f, K_tot_star, status = maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f, scenarios)
+        e_f, a_f, K_tot_star, status = maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f,
+                                                                              scenarios, with_tie_breakers=with_tie_breakers)
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
             return {"status": "INFEASABLE", "history": history}
         d_f, missile_cost_f, production_capacity = minimize_production_capacity(P_A, B_R, F, K_f, e_f, H_f, a_f)
