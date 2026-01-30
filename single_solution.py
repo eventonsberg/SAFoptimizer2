@@ -2,7 +2,8 @@ import streamlit as st
 import pandas as pd
 from optimizer import solve_interdiction
 
-def single_solution_results(type_f, C_f, C_A):
+def single_solution_results():
+    type_f, C_f, C_A = st.session_state.single_solution_params
     results = st.session_state.single_solution_results
     results_list = []
     type_counters = {}
@@ -37,6 +38,8 @@ def single_solution_results(type_f, C_f, C_A):
     st.write(f"Totale missilkostnader: {total_missile_cost:,.1f}")
 
 def display_single_solution(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f):
+    if "single_solution_params" not in st.session_state:
+        st.session_state.single_solution_params = []
     if "single_solution_results" not in st.session_state:
         st.session_state.single_solution_results = {}
 
@@ -47,7 +50,7 @@ def display_single_solution(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f)
 
     if st.session_state.single_solution_results:
         with results_placeholder.container():
-            single_solution_results(type_f, C_f, C_A)
+            single_solution_results()
 
     if run_optimization:
         results = solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f,
@@ -58,6 +61,7 @@ def display_single_solution(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f)
             with st.expander("Vis iterasjonshistorikk"):
                 st.dataframe(results["history"])
             return
+        st.session_state.single_solution_params = [type_f, C_f, C_A]
         st.session_state.single_solution_results = results
         with results_placeholder.container():
-            single_solution_results(type_f, C_f, C_A)
+            single_solution_results()

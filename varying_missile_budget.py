@@ -33,6 +33,8 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
         key="budget_step_tab2"
     )
 
+    if "varying_missile_budget_params" not in st.session_state:
+        st.session_state.varying_missile_budget_params = {}
     if "varying_missile_budget_results" not in st.session_state:
         st.session_state.varying_missile_budget_results = {}
 
@@ -44,9 +46,9 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
             plot_remaining_production_capacity_vs_missile_budget()
             st.subheader("Fabrikkonfigurasjon")
-            plot_facility_configuration_vs_missile_budget(type_f)
+            plot_facility_configuration_vs_missile_budget()
             st.subheader("Kostnader")
-            plot_costs_vs_missile_budget(B_B, C_f, C_A)
+            plot_costs_vs_missile_budget()
 
     if run_optimization:
         if min_budget > max_budget:
@@ -62,11 +64,17 @@ def display_varying_missile_budget(P_A, C_A, A_max, _, B_B, F, type_f, K_f, H_f,
             if result["status"] != "OPTIMAL":
                 st.error(f"Optimeringen feilet for missilbudsjett {B_R} med status: {result['status']}")
                 continue
+            st.session_state.varying_missile_budget_params = {
+                "type_f": type_f,
+                "C_f": C_f,
+                "C_A": C_A,
+                "B_B": B_B
+            }
             st.session_state.varying_missile_budget_results[B_R] = result
             with chart_placeholder.container():
                 st.subheader("Gjenværende produksjonskapasitet etter angrep")
                 plot_remaining_production_capacity_vs_missile_budget()
                 st.subheader("Fabrikkonfigurasjon")
-                plot_facility_configuration_vs_missile_budget(type_f)
+                plot_facility_configuration_vs_missile_budget()
                 st.subheader("Kostnader")
-                plot_costs_vs_missile_budget(B_B, C_f, C_A)
+                plot_costs_vs_missile_budget()

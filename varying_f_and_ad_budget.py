@@ -33,6 +33,8 @@ def display_varying_f_and_ad_budget(P_A, C_A, A_max, B_R, _, F, type_f, K_f, H_f
         key="budget_step_tab3"
     )
 
+    if "varying_f_and_ad_budget_params" not in st.session_state:
+        st.session_state.varying_f_and_ad_budget_params = {}
     if "varying_f_and_ad_budget_results" not in st.session_state:
         st.session_state.varying_f_and_ad_budget_results = {}
 
@@ -44,9 +46,9 @@ def display_varying_f_and_ad_budget(P_A, C_A, A_max, B_R, _, F, type_f, K_f, H_f
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
             plot_remaining_production_capacity_vs_f_and_ad_budget()
             st.subheader("Fabrikkonfigurasjon")
-            plot_facility_configuration_vs_f_and_ad_budget(type_f)
+            plot_facility_configuration_vs_f_and_ad_budget()
             st.subheader("Kostnader")
-            plot_costs_vs_f_and_ad_budget(C_f, C_A)
+            plot_costs_vs_f_and_ad_budget()
 
     if run_optimization:
         if min_budget > max_budget:
@@ -62,11 +64,16 @@ def display_varying_f_and_ad_budget(P_A, C_A, A_max, B_R, _, F, type_f, K_f, H_f
             if result["status"] != "OPTIMAL":
                 st.error(f"Optimeringen feilet for fabrikk- og luftvernbudsjett {B_B} med status: {result['status']}")
                 continue
+            st.session_state.varying_f_and_ad_budget_params = {
+                "type_f": type_f,
+                "C_f": C_f,
+                "C_A": C_A
+            }
             st.session_state.varying_f_and_ad_budget_results[B_B] = result
             with chart_placeholder.container():
                 st.subheader("Gjenværende produksjonskapasitet etter angrep")
                 plot_remaining_production_capacity_vs_f_and_ad_budget()
                 st.subheader("Fabrikkonfigurasjon")
-                plot_facility_configuration_vs_f_and_ad_budget(type_f)
+                plot_facility_configuration_vs_f_and_ad_budget()
                 st.subheader("Kostnader")
-                plot_costs_vs_f_and_ad_budget(C_f, C_A)
+                plot_costs_vs_f_and_ad_budget()

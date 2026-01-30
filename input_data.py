@@ -108,11 +108,11 @@ def format_model_inputs(input_data):
     H_f = [] # Number of hits required to destroy facility f
     C_f = [] # Cost of facility f
     for f_type in range(len(potential_facilities)):
-        max_units = int(potential_facilities.loc[f_type, "Maks antall"])
+        max_units = int(potential_facilities.iloc[f_type]["Maks antall"])
         for _ in range(max_units):
             F += 1
-            type_f.append(potential_facilities.loc[f_type, "Type"])
-            K_f.append(int(potential_facilities.loc[f_type, "Kapasitet"]))
-            H_f.append(float(potential_facilities.loc[f_type, "Hardhet"]))
-            C_f.append(int(potential_facilities.loc[f_type, "Kostnad"]))
+            type_f.append(potential_facilities.iloc[f_type]["Type"])
+            K_f.append(int(potential_facilities.iloc[f_type]["Kapasitet"]))
+            H_f.append(float(potential_facilities.iloc[f_type]["Hardhet"]))
+            C_f.append(int(potential_facilities.iloc[f_type]["Kostnad"]))
     return P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f

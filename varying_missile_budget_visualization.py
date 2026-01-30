@@ -29,7 +29,8 @@ def plot_remaining_production_capacity_vs_missile_budget():
     )
     st.altair_chart(chart)
 
-def plot_facility_configuration_vs_missile_budget(type_f):
+def plot_facility_configuration_vs_missile_budget():
+    type_f = st.session_state.varying_missile_budget_params["type_f"]
     results = st.session_state.varying_missile_budget_results
     data = []
     for budget, result in results.items():
@@ -50,6 +51,15 @@ def plot_facility_configuration_vs_missile_budget(type_f):
                     "Luftvern": ad,
                     "Ødelagt": dest
                 })
+        if not any(established):
+            data.append({
+                "Missilbudsjett": budget,
+                "Fabrikktype": None,
+                "FabrikkID": None,
+                "Antall etablert": None,
+                "Luftvern": "",
+                "Ødelagt": False
+            })
     df = pd.DataFrame(data)
     bar = alt.Chart(df).mark_bar(
         strokeWidth=2,
@@ -111,7 +121,10 @@ def plot_facility_configuration_vs_missile_budget(type_f):
     chart = bar + text
     st.altair_chart(chart, width="stretch")
 
-def plot_costs_vs_missile_budget(B_B, C_f, C_A):
+def plot_costs_vs_missile_budget():
+    B_B = st.session_state.varying_missile_budget_params["B_B"]
+    C_f = st.session_state.varying_missile_budget_params["C_f"]
+    C_A = st.session_state.varying_missile_budget_params["C_A"]
     results = st.session_state.varying_missile_budget_results
     missile_budget = []
     facility_and_air_defence_budget = []
