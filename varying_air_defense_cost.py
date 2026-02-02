@@ -67,7 +67,6 @@ def display_varying_air_defense_cost(P_A, _, A_max, B_R, B_B, F, type_f, K_f, H_
             st.session_state.varying_air_defense_cost_params = {
                 "type_f": type_f,
                 "C_f": C_f,
-                "C_A": C_A,
                 "B_B": B_B
             }
             st.session_state.varying_air_defense_cost_results[C_A] = result
