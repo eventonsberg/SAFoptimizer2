@@ -24,7 +24,7 @@ def plot_missile_budget_vs_f_and_ad_budget_heatmap():
         ),
         y=alt.Y(
             "Missilbudsjett:O",
-            title="Missilbudsjett [MNOK]",
+            title="Missilbudsjett",
             sort="descending"
         ),
         color=alt.Color(
