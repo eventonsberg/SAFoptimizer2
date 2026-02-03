@@ -7,6 +7,7 @@ from varying_f_and_ad_budget import display_varying_f_and_ad_budget
 from missile_budget_vs_f_and_ad_budget import display_varying_missile_budget_vs_f_and_ad_budget
 from varying_air_defense_cost import display_varying_air_defense_cost
 from varying_ad_success_rate import display_varying_ad_success_rate
+from varying_facility_parameter import display_varying_facility_parameter
 
 st.set_page_config(
     page_title="SAF optimizer",
@@ -25,7 +26,8 @@ tabs = st.tabs([
     "Varierende fabrikk- og luftvernbudsjett",
     "Missilbudsjett vs. fabrikk- og luftvernbudsjett",
     "Varierende luftvernkostnad",
-    "Varierende suksessrate"
+    "Varierende suksessrate",
+    "Varierende fabrikkparameter"
 ])
 
 with tabs[0]:
@@ -45,3 +47,6 @@ with tabs[4]:
 
 with tabs[5]:
     display_varying_ad_success_rate(*model_inputs)
+
+with tabs[6]:
+    display_varying_facility_parameter(*model_inputs)
