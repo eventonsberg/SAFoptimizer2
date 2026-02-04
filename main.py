@@ -34,6 +34,7 @@ analysis = st.sidebar.radio(
     ]
 )
 
+st.divider()
 st.subheader(analysis)
 
 if analysis == "Enkeltløsning":
