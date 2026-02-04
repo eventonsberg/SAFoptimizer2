@@ -13,19 +13,6 @@ def display_sensitivity_analysis(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f,
     for param in ["Kapasitet", "Kostnad", "Hardhet"]:
         for facility in set(type_f):
             options.append(f"{param} - {facility}")
-    st.markdown( # Increase width of options boxes in multiselect
-        """
-        <style>
-        .stMultiSelect [data-baseweb="select"] span {
-            max-width: 100%;
-        }
-        .stMultiSelect [data-baseweb="tag"] {
-            width: 100%;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
     selected_params = st.multiselect(
         "Parametere",
         options=options,

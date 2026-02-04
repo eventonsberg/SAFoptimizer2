@@ -15,6 +15,20 @@ st.set_page_config(
     page_icon=":material/travel:"
 )
 
+st.markdown( # Adjust appearance of multiselect component
+        """
+        <style>
+        .stMultiSelect [data-baseweb="select"] span {
+            max-width: 100%;
+        }
+        .stMultiSelect [data-baseweb="tag"] {
+            width: 100%;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
 display_model_description()
 
 input_data = display_input_fields()
