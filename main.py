@@ -20,38 +20,35 @@ display_model_description()
 input_data = display_input_fields()
 model_inputs = format_model_inputs(input_data)
 
-st.subheader("Optimal løsning")
-tabs = st.tabs([
-    "Enkeltløsning",
-    "Sensitivitetsanalyse",
-    "Varierende missilbudsjett",
-    "Varierende fabrikk- og luftvernbudsjett",
-    "Missilbudsjett vs. fabrikk- og luftvernbudsjett",
-    "Varierende luftvernkostnad",
-    "Varierende suksessrate",
-    "Varierende fabrikkparameter"
-])
+analysis = st.sidebar.radio(
+    "**Velg ønsket analyse:**",
+    [
+        "Enkeltløsning",
+        "Sensitivitetsanalyse",
+        "Varierende fabrikkparameter",
+        "Varierende kostnad per luftvernmissil",
+        "Varierende suksessrate for luftvern",
+        "Varierende fabrikk- og luftvernbudsjett",
+        "Varierende missilbudsjett",
+        "Missilbudsjett vs. fabrikk- og luftvernbudsjett",
+    ]
+)
 
-with tabs[0]:
+st.subheader(analysis)
+
+if analysis == "Enkeltløsning":
     display_single_solution(*model_inputs)
-
-with tabs[1]:
+elif analysis == "Sensitivitetsanalyse":
     display_sensitivity_analysis(*model_inputs)
-
-with tabs[2]:
+elif analysis == "Varierende missilbudsjett":
     display_varying_missile_budget(*model_inputs)
-
-with tabs[3]:
+elif analysis == "Varierende fabrikk- og luftvernbudsjett":
     display_varying_f_and_ad_budget(*model_inputs)
-
-with tabs[4]:
+elif analysis == "Missilbudsjett vs. fabrikk- og luftvernbudsjett":
     display_varying_missile_budget_vs_f_and_ad_budget(*model_inputs)
-
-with tabs[5]:
+elif analysis == "Varierende kostnad per luftvernmissil":
     display_varying_air_defense_cost(*model_inputs)
-
-with tabs[6]:
+elif analysis == "Varierende suksessrate for luftvern":
     display_varying_ad_success_rate(*model_inputs)
-
-with tabs[7]:
+elif analysis == "Varierende fabrikkparameter":
     display_varying_facility_parameter(*model_inputs)
