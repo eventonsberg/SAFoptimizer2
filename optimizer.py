@@ -18,7 +18,7 @@ def minimize_production_capacity(P_A, B_R, F, K_f, e_f, H_f, a_f):
             d_f[f] <= e_f[f] # Cannot destroy facilities that are not established
         )
     
-    scaled_missile_cost_f = [scale_int(H_f[f] + P_A * a_f[f]) for f in range(F)]
+    scaled_missile_cost_f = [scale_int(H_f[f]) + scale_int(P_A) * a_f[f] for f in range(F)]
     scaled_missile_budget = scale_int(B_R)
     model.Add(
         sum(scaled_missile_cost_f[f] * d_f[f] for f in range(F)) <= scaled_missile_budget # Missile budget constraint
@@ -73,8 +73,10 @@ def maximize_remaining_production_capacity(P_A, C_A, A_max, B_R, B_B, F, type_f,
             a_f[f] <= A_max * e_f[f]  # Air defense missiles can only be assigned to established facilities
         )
     
+    scaled_f_and_ad_cost_f = [scale_int(C_f[f]) * e_f[f] + scale_int(C_A) * a_f[f] for f in range(F)]
+    scaled_B_B = scale_int(B_B)
     model.Add(
-        sum(C_f[f] * e_f[f] + C_A * a_f[f] for f in range(F)) <= B_B  # Facility and air defense budget constraint
+        sum(scaled_f_and_ad_cost_f[f] for f in range(F)) <= scaled_B_B  # Facility and air defense budget constraint
     )
 
     # Symmetry breaking

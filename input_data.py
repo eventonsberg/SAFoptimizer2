@@ -97,10 +97,10 @@ def display_input_fields():
 
 def format_model_inputs(input_data):
     P_A = float(input_data["air_defense"]["success_rate"]) # Probability of successful interception by an air defense missile
-    C_A = int(input_data["air_defense"]["cost"]) # Cost of an air defense missile
+    C_A = float(input_data["air_defense"]["cost"]) # Cost of an air defense missile
     A_max = int(input_data["air_defense"]["max_count"]) # Maximum number of air defense missiles protecting a facility
-    B_R = int(input_data["restrictions"]["missile_budget"]) # Missile budget
-    B_B = int(input_data["restrictions"]["factory_and_air_defense_budget"]) # Facility and air defense budget
+    B_R = float(input_data["restrictions"]["missile_budget"]) # Missile budget
+    B_B = float(input_data["restrictions"]["factory_and_air_defense_budget"]) # Facility and air defense budget
     potential_facilities = input_data["potential_facilities"]
     F = 0 # Number of potential facilities
     type_f = [] # Type of facility f
@@ -114,5 +114,5 @@ def format_model_inputs(input_data):
             type_f.append(potential_facilities.iloc[f_type]["Type"])
             K_f.append(int(potential_facilities.iloc[f_type]["Kapasitet"]))
             H_f.append(float(potential_facilities.iloc[f_type]["Hardhet"]))
-            C_f.append(int(potential_facilities.iloc[f_type]["Kostnad"]))
+            C_f.append(float(potential_facilities.iloc[f_type]["Kostnad"]))
     return P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f
