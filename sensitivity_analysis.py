@@ -6,22 +6,28 @@ def display_sensitivity_analysis(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f,
     options = [
         "Kostnad per luftvernmissil",
         "Suksessrate for luftvern",
-        "Maks antall missiler per fabrikk",
+        "Maks antall luftvernmissiler per fabrikk",
         "Fabrikk- og luftvernbudsjett",
         "Missilbudsjett"
     ]
+    for param in ["Kapasitet", "Kostnad", "Hardhet"]:
+        for facility in set(type_f):
+            options.append(f"{param} - {facility}")
     st.markdown( # Increase width of options boxes in multiselect
         """
         <style>
         .stMultiSelect [data-baseweb="select"] span {
-            max-width: 500px;
+            max-width: 100%;
+        }
+        .stMultiSelect [data-baseweb="tag"] {
+            width: 100%;
         }
         </style>
         """,
         unsafe_allow_html=True
     )
     selected_params = st.multiselect(
-        "Velg parametre",
+        "Parametere",
         options=options,
         default=options,
         key="sensitivity_analysis_params"
@@ -69,24 +75,42 @@ def display_sensitivity_analysis(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f,
                 _K_f, _H_f, _C_f = K_f.copy(), H_f.copy(), C_f.copy()
                 factor = 1 + (variation / 100)
                 param_value = None
-                if param == "Kostnad per luftvernmissil":
-                    _C_A = int(C_A * factor)
-                    param_value = _C_A
-                elif param == "Suksessrate for luftvern":
-                    if P_A * factor > 1.0:
-                        _P_A = 1.0  # Skip invalid success rates
-                    else:
-                        _P_A = P_A * factor
-                    param_value = _P_A
-                elif param == "Maks antall missiler per fabrikk":
-                    _A_max = int(A_max * factor)
-                    param_value = _A_max
-                elif param == "Fabrikk- og luftvernbudsjett":
-                    _B_B = int(B_B * factor)
-                    param_value = _B_B
-                elif param == "Missilbudsjett":
-                    _B_R = int(B_R * factor)
-                    param_value = _B_R
+                if " - " in param:
+                    param_name, facility_name = param.split(" - ", 1)
+                    if param_name == "Hardhet":
+                        for f in range(F):
+                            if type_f[f] == facility_name:
+                                _H_f[f] = H_f[f] * factor
+                                param_value = _H_f[f]
+                    elif param_name == "Kapasitet":
+                        for f in range(F):
+                            if type_f[f] == facility_name:
+                                _K_f[f] = int(K_f[f] * factor)
+                                param_value = _K_f[f]
+                    elif param_name == "Kostnad":
+                        for f in range(F):
+                            if type_f[f] == facility_name:
+                                _C_f[f] = int(C_f[f] * factor)
+                                param_value = _C_f[f]
+                else:
+                    if param == "Kostnad per luftvernmissil":
+                        _C_A = int(C_A * factor)
+                        param_value = _C_A
+                    elif param == "Suksessrate for luftvern":
+                        if P_A * factor > 1.0:
+                            _P_A = 1.0  # Probability cannot exceed 100%
+                        else:
+                            _P_A = P_A * factor
+                        param_value = _P_A
+                    elif param == "Maks antall luftvernmissiler per fabrikk":
+                        _A_max = int(A_max * factor)
+                        param_value = _A_max
+                    elif param == "Fabrikk- og luftvernbudsjett":
+                        _B_B = int(B_B * factor)
+                        param_value = _B_B
+                    elif param == "Missilbudsjett":
+                        _B_R = int(B_R * factor)
+                        param_value = _B_R
                 result = solve_interdiction(_P_A, _C_A, _A_max, _B_R, _B_B, F, type_f, _K_f, _H_f, _C_f,
                                             iteration_placeholder=iteration_placeholder,
                                             iteration_detail=f"{param}: {variation}%"

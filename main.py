@@ -23,7 +23,7 @@ model_inputs = format_model_inputs(input_data)
 st.subheader("Optimal løsning")
 tabs = st.tabs([
     "Enkeltløsning",
-    "Sensitivitetanalyse",
+    "Sensitivitetsanalyse",
     "Varierende missilbudsjett",
     "Varierende fabrikk- og luftvernbudsjett",
     "Missilbudsjett vs. fabrikk- og luftvernbudsjett",
