@@ -16,18 +16,18 @@ st.set_page_config(
 )
 
 st.markdown( # Adjust appearance of multiselect component
-        """
-        <style>
-        .stMultiSelect [data-baseweb="select"] span {
-            max-width: 100%;
-        }
-        .stMultiSelect [data-baseweb="tag"] {
-            width: 100%;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
+    """
+    <style>
+    .stMultiSelect [data-baseweb="select"] span {
+        max-width: 100%;
+    }
+    .stMultiSelect [data-baseweb="tag"] {
+        width: 100%;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 display_model_description()
 
