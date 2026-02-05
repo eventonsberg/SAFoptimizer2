@@ -69,7 +69,10 @@ def display_varying_facility_parameter(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f
         if min_param_value > max_param_value:
             st.error("Minimum verdi for valgt parameter kan ikke være større enn maksimum.")
             return
-        param_values = np.arange(min_param_value, max_param_value + param_value_step, param_value_step)
+        if param_name == "Hardhet":
+            param_values = np.round(np.arange(min_param_value, max_param_value + (param_value_step/2), param_value_step), 1)
+        else:
+            param_values = np.arange(min_param_value, max_param_value + (param_value_step/2), param_value_step)
         st.session_state.varying_facility_parameter_results = {}
         for param_value in param_values:
             K_f_mod = K_f.copy()
