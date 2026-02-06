@@ -15,14 +15,14 @@ potential_facilities = pd.DataFrame([
         "Kapasitet": 20,
         "Kostnad": 20,
         "Hardhet": 3.0,
-        "Maks antall": 12
+        "Maks antall": 20
     },
     {
         "Type": "SAF-anlegg (stor)",
         "Kapasitet": 200,
         "Kostnad": 100,
         "Hardhet": 3.0,
-        "Maks antall": 2
+        "Maks antall": 10
     }
 ])
 
