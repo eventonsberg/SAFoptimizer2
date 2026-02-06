@@ -14,7 +14,7 @@ def display_combinations(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f):
         "Fabrikk- og luftvernbudsjett",
         "Missilbudsjett"
     ]
-    facility_types = set(type_f)
+    facility_types = sorted(set(type_f))
     for param in ["Kapasitet", "Kostnad", "Hardhet"]:
         for facility in facility_types:
             params.append(f"{param} - {facility}")
@@ -140,7 +140,11 @@ def display_combinations(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f):
             combination_count += 1
             st.session_state.combination_results[combination_count] = row
             with results_table_placeholder.container():
-                st.write(f"{combination_count} av {number_of_combinations} kombinasjoner evaluert")
-                st.progress(combination_count / number_of_combinations)
-                st.subheader("Resultater")
-                combination_results_table()
+                st.progress(
+                    combination_count / number_of_combinations,
+                    text=f":blue-badge[{(combination_count / number_of_combinations) * 100:.1f} %]"
+                )
+                st.caption(f"{combination_count} av {number_of_combinations} kombinasjoner evaluert")
+        with results_table_placeholder.container():
+            st.subheader("Resultater")
+            combination_results_table()
