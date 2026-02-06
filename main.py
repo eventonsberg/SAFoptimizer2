@@ -9,6 +9,7 @@ from missile_budget_vs_f_and_ad_budget import display_varying_missile_budget_vs_
 from varying_air_defense_cost import display_varying_air_defense_cost
 from varying_ad_success_rate import display_varying_ad_success_rate
 from varying_facility_parameter import display_varying_facility_parameter
+from combinations import display_combinations
 
 st.set_page_config(
     page_title="SAF optimizer",
@@ -45,6 +46,7 @@ analysis = st.sidebar.radio(
         "Varierende fabrikk- og luftvernbudsjett",
         "Varierende missilbudsjett",
         "Missilbudsjett vs. fabrikk- og luftvernbudsjett",
+        "Utforsk kombinasjoner"
     ]
 )
 
@@ -67,3 +69,5 @@ elif analysis == "Varierende suksessrate for luftvern":
     display_varying_ad_success_rate(*model_inputs)
 elif analysis == "Varierende fabrikkparameter":
     display_varying_facility_parameter(*model_inputs)
+elif analysis == "Utforsk kombinasjoner":
+    display_combinations(*model_inputs)
