@@ -121,11 +121,10 @@ def display_combinations(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f):
                 if is_established:
                     ftype = type_f[f]
                     facility_type_established_counts[ftype] += 1
+                    facility_type_air_defense_configs[ftype].append(air_defense)
+                    facility_type_air_defense_counts[ftype] += air_defense
                     if is_destroyed:
                         facility_type_destroyed_counts[ftype] += 1
-                    if air_defense > 0:
-                        facility_type_air_defense_configs[ftype].append(air_defense)
-                        facility_type_air_defense_counts[ftype] += 1
             row = {
                 **combination_dict,
                 "Gjenværende produksjonskapasitet": result["remaining_production_capacity_after_attack"]
