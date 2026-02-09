@@ -4,9 +4,9 @@ def display_model_description():
     expander = st.expander("Vis modellbeskrivelse")
     expander.markdown(
         """
-        Dette er en *bilevel* optimeringsmodell som løser et interdiksjonsproblem hvor:  
-        - En angriper forsøker å minimere produksjonskapasiteten ved å ødelegge fabrikker med bruk av missiler.  
-        - En forsvarer prøver å maksimere produksjonskapasiteten ved å sette opp en fabrikkonfigurasjon
+        Dette er en todelt optimeringsmodell som beskriver et samspill mellom en angriper og en forsvarer:  
+        - :red[**Angriperen**] forsøker å minimere produksjonskapasiteten ved å ødelegge fabrikker med bruk av missiler.  
+        - :blue[**Forsvareren**] prøver å maksimere produksjonskapasiteten ved å sette opp en fabrikkonfigurasjon
         og fordele luftvernmissiler på en måte som minimerer potensiell skade.  
         
         Følgende indre- og ytre optimeringsmodell løses,
@@ -146,10 +146,10 @@ def display_model_description():
         | $B_B$ | Blått budsjett -- ramme for etablering av fabrikker og luftvern |
         """
     )
-    expander.subheader("Interdiksjon")
+    expander.subheader("Samspill")
     expander.markdown(
         """
-        Interdiksjonsproblemet løses ved å kombinere den indre og ytre optimeringsmodellen.
+        Det todelte problemet løses ved å kombinere den indre og ytre optimeringsmodellen.
         Forsvarerens beslutninger om etablering av fabrikker ($e_f$) og allokering av luftvernmissiler ($a_f$)
         påvirker angriperens muligheter til å ødelegge fabrikker ($d_f$).
         Ved å iterere fram og tilbake mellom den indre og ytre modellen,
