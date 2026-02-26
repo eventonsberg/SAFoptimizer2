@@ -3,39 +3,54 @@ import streamlit as st
 
 potential_facilities = pd.DataFrame([
     {
-        "Type": "Mongstad",
-        "Kapasitet": 500,
+        "Fabrikk": "Mongstad",
         "Kostnad": 0,
+        "Kapasitet": 500,
         "Hardhet": 3.0,
         "Maks antall": 1
-    },
-    
+    }, 
     {
-        "Type": "SAF-anlegg (liten)",
-        "Kapasitet": 20,
+        "Fabrikk": "SAF-anlegg (liten)",
         "Kostnad": 20,
+        "Kapasitet": 20,
         "Hardhet": 3.0,
         "Maks antall": 20
     },
     {
-        "Type": "SAF-anlegg (stor)",
-        "Kapasitet": 200,
+        "Fabrikk": "SAF-anlegg (stor)",
         "Kostnad": 100,
+        "Kapasitet": 200,
         "Hardhet": 3.0,
         "Maks antall": 10
     }
 ])
 
-air_defense = {
-    "Kostnad": 5,
-    "Suksessrate": 0.7,
-    "Maks antall": 20
-}
+effectors = pd.DataFrame([
+    {
+        "Effektor": "Luftvernmissil",
+        "Suksessrate": 0.7
+    }
+])
+
+potential_measures = pd.DataFrame([
+    {
+        "Beskyttelsestiltak": "Minimalt luftvern",
+        "Kostnad": 30,
+        "Effektor": "Luftvernmissil",
+        "Antall effektorer": 6
+    },
+    {
+        "Beskyttelsestiltak": "Omfattende luftvern",
+        "Kostnad": 90,
+        "Effektor": "Luftvernmissil",
+        "Antall effektorer": 18
+    }
+])
 
 restrictions = {
-        "Missilbudsjett": 5,
-        "Fabrikk- og luftvernbudsjett": 250
-    }
+    "Blått budsjett": 250,
+    "Rødt budsjett": 5
+}
 
 def display_input_fields():
     st.subheader("Potensielle fabrikker")
@@ -43,47 +58,49 @@ def display_input_fields():
         potential_facilities,
         num_rows="dynamic",
         column_config={
-            "Kostnad": st.column_config.NumberColumn(format="localized")
+            "Fabrikk": st.column_config.TextColumn(required=True),
+            "Kostnad": st.column_config.NumberColumn(format="localized", required=True),
+            "Kapasitet": st.column_config.NumberColumn(format="localized", required=True),
+            "Hardhet": st.column_config.NumberColumn(required=True),
+            "Maks antall": st.column_config.NumberColumn(required=True)
         },
-        key="prod_facilities"
+        key="potential_facilities"
     )
-    st.subheader("Luftvern")
-    air_defense_edited = {
-        "cost": st.number_input(
-            "Kostnad per luftvernmissil",
-            value=air_defense["Kostnad"],
-            step=1,
-            min_value=0,
-            format="%d"
-        ),
-        "success_rate": st.number_input(
-            "Suksessrate",
-            value=air_defense["Suksessrate"],
-            step=0.01,
-            min_value=0.0,
-            max_value=1.0,
-            format="%.2f"
-        ),
-        "max_count": st.number_input(
-            "Maks antall luftvernmissiler per fabrikk",
-            value=air_defense["Maks antall"],
-            step=1,
-            min_value=0,
-            format="%d"
-        )
-    }
+
+    st.subheader("Potensielle beskyttelsestiltak")
+    effectors_edited = st.data_editor(
+        effectors,
+        num_rows="dynamic",
+        column_config={
+            "Effektor": st.column_config.TextColumn(required=True),
+            "Suksessrate": st.column_config.NumberColumn(required=True)
+        },
+        key="effectors"
+    )
+    potential_measures_edited = st.data_editor(
+        potential_measures,
+        num_rows="dynamic",
+        column_config={
+            "Beskyttelsestiltak": st.column_config.TextColumn(required=True),
+            "Kostnad": st.column_config.NumberColumn(format="localized", required=True),
+            "Effektor": st.column_config.SelectboxColumn(options=effectors_edited["Effektor"].tolist(), required=True),
+            "Antall effektorer": st.column_config.NumberColumn(format="localized", required=True)
+        },
+        key="potential_measures"
+    )
+
     st.subheader("Begrensninger")
     restrictions_edited = {
-        "factory_and_air_defense_budget": st.number_input(
-            "Fabrikk- og luftvernbudsjett",
-            value=restrictions["Fabrikk- og luftvernbudsjett"],
+        "blue_budget": st.number_input(
+            "Blått budsjett - økonomisk ramme for fabrikker og beskyttelsestiltak",
+            value=restrictions["Blått budsjett"],
             step=1,
             min_value=0,
             format="%d"
         ),
-        "missile_budget": st.number_input(
-            "Missilbudsjett",
-            value=restrictions["Missilbudsjett"],
+        "red_budget": st.number_input(
+            "Rødt budsjett - antall trusseleffektorer til disposisjon",
+            value=restrictions["Rødt budsjett"],
             step=1,
             min_value=0,
             format="%d"
@@ -91,28 +108,45 @@ def display_input_fields():
     }
     return {
         "potential_facilities": potential_facilities_edited,
-        "air_defense": air_defense_edited,
+        "effectors": effectors_edited,
+        "potential_measures": potential_measures_edited,
         "restrictions": restrictions_edited
     }
 
 def format_model_inputs(input_data):
-    P_A = float(input_data["air_defense"]["success_rate"]) # Probability of successful interception by an air defense missile
-    C_A = float(input_data["air_defense"]["cost"]) # Cost of an air defense missile
-    A_max = int(input_data["air_defense"]["max_count"]) # Maximum number of air defense missiles protecting a facility
-    B_R = float(input_data["restrictions"]["missile_budget"]) # Missile budget
-    B_B = float(input_data["restrictions"]["factory_and_air_defense_budget"]) # Facility and air defense budget
+    #P_A = float(input_data["air_defense"]["success_rate"]) # Probability of successful interception by an air defense missile
+    #C_A = float(input_data["air_defense"]["cost"]) # Cost of an air defense missile
+    #A_max = int(input_data["air_defense"]["max_count"]) # Maximum number of air defense missiles protecting a facility
+    OR = float(input_data["restrictions"]["blue_budget"]) # Blue budget - financial constraint
+    TE = float(input_data["restrictions"]["red_budget"]) # Red budget - number of threat effectors available
     potential_facilities = input_data["potential_facilities"]
     F = 0 # Number of potential facilities
     type_f = [] # Type of facility f
+    C_f = [] # Cost of facility f
     K_f = [] # Production capacity of facility f
     H_f = [] # Number of hits required to destroy facility f
-    C_f = [] # Cost of facility f
     for f_type in range(len(potential_facilities)):
         max_units = int(potential_facilities.iloc[f_type]["Maks antall"])
         for _ in range(max_units):
             F += 1
-            type_f.append(potential_facilities.iloc[f_type]["Type"])
+            type_f.append(potential_facilities.iloc[f_type]["Fabrikk"])
+            C_f.append(float(potential_facilities.iloc[f_type]["Kostnad"]))
             K_f.append(int(potential_facilities.iloc[f_type]["Kapasitet"]))
             H_f.append(float(potential_facilities.iloc[f_type]["Hardhet"]))
-            C_f.append(float(potential_facilities.iloc[f_type]["Kostnad"]))
-    return P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f
+    effectors = input_data["effectors"]
+    potential_measures = input_data["potential_measures"]
+    B = len(potential_measures) # Number of potential protective measures
+    type_b = [] # Type of protective measure b
+    C_b = [] # Cost of protective measure b
+    effector_b = [] # Effector used in protective measure b
+    P_b = [] # Success rate of effectors in protective measure b
+    A_b = [] # Number of effectors in protective measure b
+    for b in range(B):
+        type_b.append(potential_measures.iloc[b]["Beskyttelsestiltak"])
+        C_b.append(float(potential_measures.iloc[b]["Kostnad"]))
+        effector = potential_measures.iloc[b]["Effektor"]
+        effector_b.append(effector)
+        success_rate = effectors.loc[effectors["Effektor"] == effector, "Suksessrate"].values[0]
+        P_b.append(float(success_rate))
+        A_b.append(int(potential_measures.iloc[b]["Antall effektorer"]))
+    return OR, TE, F, type_f, K_f, H_f, C_f, B, type_b, C_b, effector_b, P_b, A_b

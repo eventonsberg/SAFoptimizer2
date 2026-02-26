@@ -53,7 +53,7 @@ analysis = st.sidebar.radio(
 st.divider()
 st.subheader(analysis)
 
-if analysis == "Enkeltløsning":
+'''if analysis == "Enkeltløsning":
     display_single_solution(*model_inputs)
 elif analysis == "Sensitivitetsanalyse":
     display_sensitivity_analysis(*model_inputs)
@@ -70,4 +70,4 @@ elif analysis == "Varierende suksessrate for luftvern":
 elif analysis == "Varierende fabrikkparameter":
     display_varying_facility_parameter(*model_inputs)
 elif analysis == "Utforsk kombinasjoner":
-    display_combinations(*model_inputs)
+    display_combinations(*model_inputs)'''
