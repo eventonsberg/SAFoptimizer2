@@ -41,7 +41,7 @@ potential_measures = pd.DataFrame([
     },
     {
         "Beskyttelsestiltak": "Omfattende luftvern",
-        "Kostnad": 90,
+        "Kostnad": 60,
         "Effektor": "Luftvernmissil",
         "Antall effektorer": 18
     }
@@ -114,11 +114,6 @@ def display_input_fields():
     }
 
 def format_model_inputs(input_data):
-    #P_A = float(input_data["air_defense"]["success_rate"]) # Probability of successful interception by an air defense missile
-    #C_A = float(input_data["air_defense"]["cost"]) # Cost of an air defense missile
-    #A_max = int(input_data["air_defense"]["max_count"]) # Maximum number of air defense missiles protecting a facility
-    OR = float(input_data["restrictions"]["blue_budget"]) # Blue budget - financial constraint
-    TE = float(input_data["restrictions"]["red_budget"]) # Red budget - number of threat effectors available
     potential_facilities = input_data["potential_facilities"]
     F = 0 # Number of potential facilities
     type_f = [] # Type of facility f
@@ -149,4 +144,6 @@ def format_model_inputs(input_data):
         success_rate = effectors.loc[effectors["Effektor"] == effector, "Suksessrate"].values[0]
         P_b.append(float(success_rate))
         A_b.append(int(potential_measures.iloc[b]["Antall effektorer"]))
-    return OR, TE, F, type_f, K_f, H_f, C_f, B, type_b, C_b, effector_b, P_b, A_b
+    OR = float(input_data["restrictions"]["blue_budget"]) # Blue budget - financial constraint
+    TE = float(input_data["restrictions"]["red_budget"]) # Red budget - number of threat effectors available
+    return F, type_f, K_f, H_f, C_f, B, type_b, C_b, effector_b, P_b, A_b, OR, TE
