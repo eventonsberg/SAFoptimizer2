@@ -22,15 +22,16 @@ def single_solution_results_table():
             type_counters[type_f[f]] += 1
             type_name = f"{type_f[f]} #{type_counters[type_f[f]]}" if type_counters[type_f[f]] > 1 else type_f[f]
             number_of_protection_measures = sum(results["implemented_protection_measures"][b][f] for b in range(B))
-            protection_measures = []
+            protection_measure = ''
             if number_of_protection_measures > 0:
                 protection_measures = [type_b[b] for b in range(B) if results["implemented_protection_measures"][b][f]]
+                protection_measure = ', '.join(protection_measures) # Separate with comma if multiple protection measures implemented
             b_cost = sum(C_b[b] * results["implemented_protection_measures"][b][f] for b in range(B))
             f_and_b_cost = C_f[f] + b_cost
             effector_cost = results["effector_costs"][f]
             results_list.append({
                 "Fabrikk": type_name,
-                "Beskyttelsestiltak": protection_measures,
+                "Beskyttelsestiltak": protection_measure,
                 "Kostnad": f_and_b_cost,
                 "Ødelagt": results["destroyed_facilities"][f],
                 "Trusseleffektorer": effector_cost,
