@@ -37,13 +37,15 @@ potential_measures = pd.DataFrame([
         "Beskyttelsestiltak": "Minimalt luftvern",
         "Kostnad": 30,
         "Effektor": "Luftvernmissil",
-        "Antall effektorer": 6
+        "Antall effektorer": 6,
+        "TiltaksID": "M"
     },
     {
         "Beskyttelsestiltak": "Omfattende luftvern",
         "Kostnad": 60,
         "Effektor": "Luftvernmissil",
-        "Antall effektorer": 18
+        "Antall effektorer": 18,
+        "TiltaksID": "O"
     }
 ])
 
@@ -136,6 +138,7 @@ def format_model_inputs(input_data):
     effector_b = [] # Effector used in protective measure b
     P_b = [] # Success rate of effectors in protective measure b
     A_b = [] # Number of effectors in protective measure b
+    id_b = [] # ID of protective measure b
     for b in range(B):
         type_b.append(potential_measures.iloc[b]["Beskyttelsestiltak"])
         C_b.append(float(potential_measures.iloc[b]["Kostnad"]))
@@ -144,6 +147,22 @@ def format_model_inputs(input_data):
         success_rate = effectors.loc[effectors["Effektor"] == effector, "Suksessrate"].values[0]
         P_b.append(float(success_rate))
         A_b.append(int(potential_measures.iloc[b]["Antall effektorer"]))
+        id_b.append(potential_measures.iloc[b]["TiltaksID"])
     OR = float(input_data["restrictions"]["blue_budget"]) # Blue budget - financial constraint
     TE = float(input_data["restrictions"]["red_budget"]) # Red budget - number of threat effectors available
-    return F, type_f, K_f, H_f, C_f, B, type_b, C_b, effector_b, P_b, A_b, OR, TE
+    return {
+        "F": F,
+        "type_f": type_f,
+        "K_f": K_f,
+        "H_f": H_f,
+        "C_f": C_f,
+        "B": B,
+        "type_b": type_b,
+        "C_b": C_b,
+        "effector_b": effector_b,
+        "P_b": P_b,
+        "A_b": A_b,
+        "id_b": id_b,
+        "OR": OR,
+        "TE": TE
+    }

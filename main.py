@@ -2,6 +2,7 @@ import streamlit as st
 from model_description import display_model_description
 from input_data import display_input_fields, format_model_inputs
 from single_solution import display_single_solution
+from varying_blue_budget import display_varying_blue_budget
 from sensitivity_analysis import display_sensitivity_analysis
 from varying_missile_budget import display_varying_missile_budget
 from varying_f_and_ad_budget import display_varying_f_and_ad_budget
@@ -39,6 +40,7 @@ analysis = st.sidebar.radio(
     "**Velg ønsket analyse:**",
     [
         "Enkeltløsning",
+        "Varierende blått budsjett",
         "Sensitivitetsanalyse",
         "Varierende fabrikkparameter",
         "Varierende kostnad per luftvernmissil",
@@ -54,7 +56,9 @@ st.divider()
 st.subheader(analysis)
 
 if analysis == "Enkeltløsning":
-    display_single_solution(*model_inputs)
+    display_single_solution(model_inputs)
+#elif analysis == "Varierende blått budsjett":
+#    display_varying_blue_budget(*model_inputs)
 #elif analysis == "Sensitivitetsanalyse":
 #    display_sensitivity_analysis(*model_inputs)
 #elif analysis == "Varierende missilbudsjett":

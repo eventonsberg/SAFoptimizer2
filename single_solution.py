@@ -3,7 +3,20 @@ import pandas as pd
 from optimizer import solve_interdiction
 from single_solution_visualization import single_solution_results_table
 
-def display_single_solution(F, type_f, K_f, H_f, C_f, B, type_b, C_b, effector_b, P_b, A_b, OR, TE):
+def display_single_solution(model_inputs):
+    F = model_inputs.get("F")
+    type_f = model_inputs.get("type_f")
+    K_f = model_inputs.get("K_f")
+    H_f = model_inputs.get("H_f")
+    C_f = model_inputs.get("C_f")
+    B = model_inputs.get("B")
+    type_b = model_inputs.get("type_b")
+    C_b = model_inputs.get("C_b")
+    P_b = model_inputs.get("P_b")
+    A_b = model_inputs.get("A_b")
+    OR = model_inputs.get("OR")
+    TE = model_inputs.get("TE")
+
     if "single_solution_params" not in st.session_state:
         st.session_state.single_solution_params = {}
     if "single_solution_results" not in st.session_state:
