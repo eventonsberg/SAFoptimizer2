@@ -2,39 +2,39 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-def plot_remaining_production_capacity_vs_blue_budget():
-    results = st.session_state.varying_blue_budget_results
-    blue_budgets = []
+def plot_remaining_production_capacity_vs_red_budget():
+    results = st.session_state.varying_red_budget_results
+    red_budgets = []
     remaining_capacities = []
     for budget, result in results.items():
-        blue_budgets.append(budget)
+        red_budgets.append(budget)
         remaining_capacities.append(result["remaining_production_capacity_after_attack"])
     df = pd.DataFrame({
-        "Blått budsjett": blue_budgets,
+        "Rødt budsjett": red_budgets,
         "Produksjonskapasitet": remaining_capacities
     })
     chart = alt.Chart(df).mark_line(
         point=True
     ).encode(
         x=alt.X(
-            "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            "Rødt budsjett:O",
+            title="Rødt budsjett [# trusseleffektorer]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
             "Produksjonskapasitet:Q",
             title="Produksjonskapasitet [m³/dag]"
         ),
-        tooltip=["Blått budsjett", "Produksjonskapasitet"],
+        tooltip=["Rødt budsjett", "Produksjonskapasitet"],
     )
     st.altair_chart(chart)
 
-def plot_facility_configuration_vs_blue_budget():
-    F = st.session_state.varying_blue_budget_params["F"]
-    type_f = st.session_state.varying_blue_budget_params["type_f"]
-    B = st.session_state.varying_blue_budget_params["B"]
-    type_b = st.session_state.varying_blue_budget_params["type_b"]
-    results = st.session_state.varying_blue_budget_results
+def plot_facility_configuration_vs_red_budget():
+    F = st.session_state.varying_red_budget_params["F"]
+    type_f = st.session_state.varying_red_budget_params["type_f"]
+    B = st.session_state.varying_red_budget_params["B"]
+    type_b = st.session_state.varying_red_budget_params["type_b"]
+    results = st.session_state.varying_red_budget_results
     data = []
     for budget, result in results.items():
         established_f = result["established_facilities"]
@@ -52,7 +52,7 @@ def plot_facility_configuration_vs_blue_budget():
                 if protection_measure_types:
                     protection_measure_string = ", ".join(protection_measure_types)
                 data.append({
-                    "Blått budsjett": budget,
+                    "Rødt budsjett": budget,
                     "Fabrikktype": facility,
                     "FabrikkID": f"{facility} #{facility_counters[facility]}",
                     "Antall etablert": 1,
@@ -61,7 +61,7 @@ def plot_facility_configuration_vs_blue_budget():
                 })
         if not any(established_f):
             data.append({ # Avoid empty dataframe if no facilities are established
-                "Blått budsjett": budget,
+                "Rødt budsjett": budget,
                 "Fabrikktype": None,
                 "FabrikkID": None,
                 "Antall etablert": None,
@@ -74,8 +74,8 @@ def plot_facility_configuration_vs_blue_budget():
         align="center"
     ).encode(
         x=alt.X(
-            "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            "Rødt budsjett:O",
+            title="Rødt budsjett [# trusseleffektorer]",
             axis=alt.Axis(labelAngle=0)
         ),
         xOffset=alt.XOffset("Fabrikktype:N"),
@@ -110,7 +110,7 @@ def plot_facility_configuration_vs_blue_budget():
                 symbolFillColor="transparent"
             )
         ),
-        tooltip=["Blått budsjett", "FabrikkID", "Beskyttelsestiltak", "Ødelagt"],
+        tooltip=["Rødt budsjett", "FabrikkID", "Beskyttelsestiltak", "Ødelagt"],
     )
     protection_measures_df = df[df["Beskyttelsestiltak"] != ""]
     if protection_measures_df.empty:
@@ -119,7 +119,7 @@ def plot_facility_configuration_vs_blue_budget():
         point = ( # Overlay symbols for protection measures on top of the bar chart
             alt.Chart(protection_measures_df).transform_window(
                 stack_index='row_number()',
-                groupby=["Blått budsjett", "Fabrikktype"],
+                groupby=["Rødt budsjett", "Fabrikktype"],
                 sort=[
                     alt.SortField("Ødelagt", order="ascending"),
                     alt.SortField("FabrikkID", order="ascending")
@@ -132,7 +132,7 @@ def plot_facility_configuration_vs_blue_budget():
                 size=80,
                 strokeWidth=2
             ).encode(
-                x=alt.X("Blått budsjett:O"),
+                x=alt.X("Rødt budsjett:O"),
                 xOffset=alt.XOffset("Fabrikktype:N"),
                 y=alt.Y(
                     "LabelPos:Q"
@@ -150,24 +150,25 @@ def plot_facility_configuration_vs_blue_budget():
                         symbolStrokeWidth=3
                     )
                 ),
-                tooltip=["Blått budsjett", "FabrikkID", "Beskyttelsestiltak", "Ødelagt"]
+                tooltip=["Rødt budsjett", "FabrikkID", "Beskyttelsestiltak", "Ødelagt"]
             )
         )
         chart = bar + point
     st.altair_chart(chart)
 
-def plot_costs_vs_blue_budget():
-    F = st.session_state.varying_blue_budget_params["F"]
-    C_f = st.session_state.varying_blue_budget_params["C_f"]
-    B = st.session_state.varying_blue_budget_params["B"]
-    C_b = st.session_state.varying_blue_budget_params["C_b"]
-    results = st.session_state.varying_blue_budget_results
-    blue_budgets = []
+def plot_costs_vs_red_budget():
+    F = st.session_state.varying_red_budget_params["F"]
+    C_f = st.session_state.varying_red_budget_params["C_f"]
+    B = st.session_state.varying_red_budget_params["B"]
+    C_b = st.session_state.varying_red_budget_params["C_b"]
+    OR = st.session_state.varying_red_budget_params["OR"]
+    results = st.session_state.varying_red_budget_results
+    red_budgets = []
     facility_costs = []
     protection_measure_costs = []
     total_costs = []
-    for OR, result in results.items():
-        blue_budgets.append(OR)
+    for TE, result in results.items():
+        red_budgets.append(TE)
         established_f = result["established_facilities"]
         facility_cost = sum(C_f[f] for f in range(F) if established_f[f])
         facility_costs.append(facility_cost)
@@ -176,13 +177,13 @@ def plot_costs_vs_blue_budget():
         protection_measure_costs.append(protection_measure_cost)
         total_costs.append(facility_cost + protection_measure_cost)
     df = pd.DataFrame({
-        "Blått budsjett": blue_budgets,
-        "Totalbudsjett": blue_budgets,
+        "Rødt budsjett": red_budgets,
+        "Totalbudsjett": OR,
         "Kostnad fabrikker": facility_costs,
         "Kostnad beskyttelsestiltak": protection_measure_costs,
         "Totalkostnad": total_costs
     })
-    df_melted = df.melt(id_vars=["Blått budsjett"],
+    df_melted = df.melt(id_vars=["Rødt budsjett"],
                         value_vars=["Totalbudsjett", "Kostnad fabrikker", "Kostnad beskyttelsestiltak", "Totalkostnad"],
                         var_name="Kostnadstype",
                         value_name="Kostnad"
@@ -191,8 +192,8 @@ def plot_costs_vs_blue_budget():
         point=True
     ).encode(
         x=alt.X(
-            "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            "Rødt budsjett:O",
+            title="Rødt budsjett [MNOK]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -204,6 +205,6 @@ def plot_costs_vs_blue_budget():
             title="Kostnadstype",
             legend=alt.Legend(orient="bottom")
         ),
-        tooltip=["Blått budsjett", "Kostnadstype", "Kostnad"]
+        tooltip=["Rødt budsjett", "Kostnadstype", "Kostnad"]
     )
     st.altair_chart(chart)
