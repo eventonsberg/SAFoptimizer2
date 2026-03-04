@@ -7,7 +7,20 @@ from varying_facility_parameter_visualization import (
     plot_costs_vs_facility_parameter
 )
 
-def display_varying_facility_parameter(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f):
+def display_varying_facility_parameter(model_inputs):
+    F = model_inputs.get("F")
+    type_f = model_inputs.get("type_f")
+    K_f = model_inputs.get("K_f")
+    H_f = model_inputs.get("H_f")
+    C_f = model_inputs.get("C_f")
+    B = model_inputs.get("B")
+    type_b = model_inputs.get("type_b")
+    C_b = model_inputs.get("C_b")
+    P_b = model_inputs.get("P_b")
+    A_b = model_inputs.get("A_b")
+    OR = model_inputs.get("OR")
+    TE = model_inputs.get("TE")
+
     facility_name = st.selectbox(
         "Velg fabrikk",
         options=list(set(type_f)),
@@ -41,7 +54,7 @@ def display_varying_facility_parameter(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f
         step=0.1 if param_name == "Hardhet" else 1,
         min_value=0.1 if param_name == "Hardhet" else 1,
         format="%.1f" if param_name == "Hardhet" else "%d",
-        key="selected_p_step"
+        key="facility_param_step"
     )
 
     if "varying_facility_parameter_f_name" not in st.session_state:
@@ -69,9 +82,9 @@ def display_varying_facility_parameter(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f
         if min_param_value > max_param_value:
             st.error("Minimum verdi for valgt parameter kan ikke være større enn maksimum.")
             return
-        if param_name == "Hardhet":
+        if param_name == "Hardhet": # Float value, round to 1 decimal place
             param_values = np.round(np.arange(min_param_value, max_param_value + (param_value_step/2), param_value_step), 1)
-        else:
+        else: # Integer value
             param_values = np.arange(min_param_value, max_param_value + (param_value_step/2), param_value_step)
         st.session_state.varying_facility_parameter_results = {}
         for param_value in param_values:
@@ -81,12 +94,12 @@ def display_varying_facility_parameter(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f
             facility_indices = [i for i, t in enumerate(type_f) if t == facility_name]
             for idx in facility_indices:
                 if param_name == "Kapasitet":
-                    K_f_mod[idx] = param_value
+                    K_f_mod[idx] = int(param_value)
                 elif param_name == "Kostnad":
                     C_f_mod[idx] = param_value
                 elif param_name == "Hardhet":
                     H_f_mod[idx] = param_value
-            result = solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f_mod, H_f_mod, C_f_mod,
+            result = solve_interdiction(F, type_f, K_f_mod, H_f_mod, C_f_mod, B, C_b, P_b, A_b, OR, TE, 
                                         iteration_placeholder=iteration_placeholder,
                                         iteration_detail=f"{param_name}: {param_value}"
             )
@@ -96,10 +109,13 @@ def display_varying_facility_parameter(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f
             st.session_state.varying_facility_parameter_f_name = facility_name
             st.session_state.varying_facility_parameter_p_name = param_name
             st.session_state.varying_facility_parameter_params = {
+                "F": F,
                 "type_f": type_f,
                 "C_f": C_f_mod,
-                "C_A": C_A,
-                "B_B": B_B
+                "B": B,
+                "type_b": type_b,
+                "C_b": C_b,
+                "OR": OR
             }
             # Store C_f_mod in the result for correct plotting later
             result["C_f"] = C_f_mod.copy()
