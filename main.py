@@ -57,8 +57,8 @@ st.subheader(analysis)
 
 if analysis == "Enkeltløsning":
     display_single_solution(model_inputs)
-#elif analysis == "Varierende blått budsjett":
-#    display_varying_blue_budget(*model_inputs)
+elif analysis == "Varierende blått budsjett":
+    display_varying_blue_budget(model_inputs)
 #elif analysis == "Sensitivitetsanalyse":
 #    display_sensitivity_analysis(*model_inputs)
 #elif analysis == "Varierende missilbudsjett":
