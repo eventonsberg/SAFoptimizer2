@@ -21,16 +21,24 @@ def display_varying_facility_parameter(model_inputs):
     OR = model_inputs.get("OR")
     TE = model_inputs.get("TE")
 
-    facility_name = st.selectbox(
+    facility_name = st.segmented_control(
         "Velg fabrikk",
         options=list(set(type_f)),
-        key="selected_f_name"
+        default=type_f[0],
+        key="facility_name"
     )
-    param_name = st.selectbox(
+    if not facility_name:
+        st.warning("Velg fabrikk")
+        return
+    param_name = st.segmented_control(
         "Velg parameter",
-        options=["Kapasitet", "Kostnad", "Hardhet"],
-        key="selected_p_name"
+        options=["Kostnad", "Kapasitet", "Hardhet"],
+        default="Kostnad",
+        key="facility_param_name"
     )
+    if not param_name:
+        st.warning("Velg parameter")
+        return
     col1, col2 = st.columns(2)
     with col1:
         min_param_value = st.number_input(
