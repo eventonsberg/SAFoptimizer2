@@ -80,19 +80,19 @@ def display_varying_protection_measure_parameter(model_inputs):
         key="protection_measure_param_step"
     )
 
-    '''if "varying_facility_parameter_f_name" not in st.session_state:
-        st.session_state.varying_facility_parameter_f_name = facility_name
-    if "varying_facility_parameter_p_name" not in st.session_state:
-        st.session_state.varying_facility_parameter_p_name = param_name
-    if "varying_facility_parameter_params" not in st.session_state:
-        st.session_state.varying_facility_parameter_params = {}
-    if "varying_facility_parameter_results" not in st.session_state:
-        st.session_state.varying_facility_parameter_results = {}
+    if "varying_protection_measure_parameter_type_name" not in st.session_state:
+        st.session_state.varying_protection_measure_parameter_type_name = type_name
+    if "varying_protection_measure_parameter_param_name" not in st.session_state:
+        st.session_state.varying_protection_measure_parameter_param_name = param_name
+    if "varying_protection_measure_parameter_params" not in st.session_state:
+        st.session_state.varying_protection_measure_parameter_params = {}
+    if "varying_protection_measure_parameter_results" not in st.session_state:
+        st.session_state.varying_protection_measure_parameter_results = {}
 
     run_optimization = st.button("Kjør optimering", type="primary", key="run_varying_protection_measure_parameter")
     iteration_placeholder = st.empty()
     chart_placeholder = st.empty()
-    if st.session_state.varying_facility_parameter_results:
+    if st.session_state.varying_protection_measure_parameter_results:
         with chart_placeholder.container():
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
             plot_remaining_production_capacity_vs_protection_measure_parameter()
@@ -105,48 +105,50 @@ def display_varying_protection_measure_parameter(model_inputs):
         if min_param_value > max_param_value:
             st.error("Minimum verdi for valgt parameter kan ikke være større enn maksimum.")
             return
-        if param_name == "Hardhet": # Float value, round to 1 decimal place
-            param_values = np.round(np.arange(min_param_value, max_param_value + (param_value_step/2), param_value_step), 1)
+        if param_name == "Suksessrate": # Float value, round to 2 decimal places
+            param_values = np.round(np.arange(min_param_value, max_param_value + (param_value_step/2), param_value_step), 2)
         else: # Integer value
             param_values = np.arange(min_param_value, max_param_value + (param_value_step/2), param_value_step)
-        st.session_state.varying_facility_parameter_results = {}
+        st.session_state.varying_protection_measure_parameter_results = {}
         for param_value in param_values:
-            K_f_mod = K_f.copy()
-            C_f_mod = C_f.copy()
-            H_f_mod = H_f.copy()
-            facility_indices = [i for i, t in enumerate(type_f) if t == facility_name]
-            for idx in facility_indices:
-                if param_name == "Kapasitet":
-                    K_f_mod[idx] = int(param_value)
-                elif param_name == "Kostnad":
-                    C_f_mod[idx] = param_value
-                elif param_name == "Hardhet":
-                    H_f_mod[idx] = param_value
-            result = solve_interdiction(F, type_f, K_f_mod, H_f_mod, C_f_mod, B, C_b, P_b, A_b, OR, TE, 
+            C_b_mod = C_b.copy()
+            P_b_mod = P_b.copy()
+            A_b_mod = A_b.copy()
+            if param_name == "Suksessrate":
+                protection_measure_indices = [b for b, t in enumerate(effector_b) if t == type_name]
+                for b in protection_measure_indices:
+                    P_b_mod[b] = param_value
+            else:
+                protection_measure_indices = [b for b, t in enumerate(type_b) if t == type_name]
+                for b in protection_measure_indices:
+                        if param_name == "Kostnad":
+                            C_b_mod[b] = param_value
+                        elif param_name == "Antall effektorer":
+                            A_b_mod[b] = int(param_value)
+            result = solve_interdiction(F, type_f, K_f, H_f, C_f, B, C_b_mod, P_b_mod, A_b_mod, OR, TE, 
                                         iteration_placeholder=iteration_placeholder,
                                         iteration_detail=f"{param_name}: {param_value}"
             )
             if result["status"] != "OPTIMAL":
                 st.error(f"Optimeringen feilet for {param_name} {param_value} med status: {result['status']}")
                 continue
-            st.session_state.varying_facility_parameter_f_name = facility_name
-            st.session_state.varying_facility_parameter_p_name = param_name
-            st.session_state.varying_facility_parameter_params = {
+            st.session_state.varying_protection_measure_parameter_type_name = type_name
+            st.session_state.varying_protection_measure_parameter_param_name = param_name
+            st.session_state.varying_protection_measure_parameter_params = {
                 "F": F,
                 "type_f": type_f,
-                "C_f": C_f_mod,
+                "C_f": C_f,
                 "B": B,
                 "type_b": type_b,
-                "C_b": C_b,
                 "OR": OR
             }
-            # Store C_f_mod in the result for correct plotting later
-            result["C_f"] = C_f_mod.copy()
-            st.session_state.varying_facility_parameter_results[param_value] = result
+            # Store C_b_mod in the result for correct cost plotting
+            result["C_b"] = C_b_mod.copy()
+            st.session_state.varying_protection_measure_parameter_results[param_value] = result
             with chart_placeholder.container():
                 st.subheader("Gjenværende produksjonskapasitet etter angrep")
                 plot_remaining_production_capacity_vs_protection_measure_parameter()
                 st.subheader("Fabrikkonfigurasjon")
                 plot_facility_configuration_vs_protection_measure_parameter()
                 st.subheader("Kostnader")
-                plot_costs_vs_protection_measure_parameter()'''
+                plot_costs_vs_protection_measure_parameter()

@@ -99,14 +99,14 @@ def display_varying_facility_parameter(model_inputs):
             K_f_mod = K_f.copy()
             C_f_mod = C_f.copy()
             H_f_mod = H_f.copy()
-            facility_indices = [i for i, t in enumerate(type_f) if t == facility_name]
-            for idx in facility_indices:
+            facility_indices = [f for f, t in enumerate(type_f) if t == facility_name]
+            for f in facility_indices:
                 if param_name == "Kapasitet":
-                    K_f_mod[idx] = int(param_value)
+                    K_f_mod[f] = int(param_value)
                 elif param_name == "Kostnad":
-                    C_f_mod[idx] = param_value
+                    C_f_mod[f] = param_value
                 elif param_name == "Hardhet":
-                    H_f_mod[idx] = param_value
+                    H_f_mod[f] = param_value
             result = solve_interdiction(F, type_f, K_f_mod, H_f_mod, C_f_mod, B, C_b, P_b, A_b, OR, TE, 
                                         iteration_placeholder=iteration_placeholder,
                                         iteration_detail=f"{param_name}: {param_value}"
@@ -119,13 +119,12 @@ def display_varying_facility_parameter(model_inputs):
             st.session_state.varying_facility_parameter_params = {
                 "F": F,
                 "type_f": type_f,
-                "C_f": C_f_mod,
                 "B": B,
                 "type_b": type_b,
                 "C_b": C_b,
                 "OR": OR
             }
-            # Store C_f_mod in the result for correct plotting later
+            # Store C_f_mod in the result for correct cost plotting
             result["C_f"] = C_f_mod.copy()
             st.session_state.varying_facility_parameter_results[param_value] = result
             with chart_placeholder.container():

@@ -179,7 +179,7 @@ def plot_costs_vs_facility_parameter():
         param_values.append(param_value)
         C_f_this = result.get("C_f")
         established_f = result["established_facilities"]
-        facility_cost = sum(C_f_this[f] for f in range(F) if established_f[f]) if C_f_this is not None else 0
+        facility_cost = sum(C_f_this[f] for f in range(F) if established_f[f])
         facility_costs.append(facility_cost)
         implemented_bf = result["implemented_protection_measures"]
         protection_measure_cost = sum(C_b[b] * implemented_bf[b][f] for f in range(F) for b in range(B))

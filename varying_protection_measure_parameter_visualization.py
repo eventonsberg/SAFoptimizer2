@@ -3,10 +3,10 @@ import pandas as pd
 import altair as alt
 
 def plot_remaining_production_capacity_vs_protection_measure_parameter():
-    facility_name = st.session_state.varying_facility_parameter_f_name
-    param_name = st.session_state.varying_facility_parameter_p_name
-    param_unit = " [m³/dag]" if param_name == "Kapasitet" else " [MNOK]" if param_name == "Kostnad" else ""
-    results = st.session_state.varying_facility_parameter_results
+    type_name = st.session_state.varying_protection_measure_parameter_type_name
+    param_name = st.session_state.varying_protection_measure_parameter_param_name
+    param_unit = " [MNOK]" if param_name == "Kostnad" else ""
+    results = st.session_state.varying_protection_measure_parameter_results
     param_values = []
     remaining_capacities = []
     for param_value, result in results.items():
@@ -21,7 +21,7 @@ def plot_remaining_production_capacity_vs_protection_measure_parameter():
     ).encode(
         x=alt.X(
             f"{param_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            title=f"{param_name} til {type_name}{param_unit}",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -33,14 +33,14 @@ def plot_remaining_production_capacity_vs_protection_measure_parameter():
     st.altair_chart(chart)
 
 def plot_facility_configuration_vs_protection_measure_parameter():
-    facility_name = st.session_state.varying_facility_parameter_f_name
-    param_name = st.session_state.varying_facility_parameter_p_name
-    param_unit = " [m³/dag]" if param_name == "Kapasitet" else " [MNOK]" if param_name == "Kostnad" else ""
-    F = st.session_state.varying_facility_parameter_params["F"]
-    type_f = st.session_state.varying_facility_parameter_params["type_f"]
-    B = st.session_state.varying_facility_parameter_params["B"]
-    type_b = st.session_state.varying_facility_parameter_params["type_b"]
-    results = st.session_state.varying_facility_parameter_results
+    type_name = st.session_state.varying_protection_measure_parameter_type_name
+    param_name = st.session_state.varying_protection_measure_parameter_param_name
+    param_unit = " [MNOK]" if param_name == "Kostnad" else ""
+    F = st.session_state.varying_protection_measure_parameter_params["F"]
+    type_f = st.session_state.varying_protection_measure_parameter_params["type_f"]
+    B = st.session_state.varying_protection_measure_parameter_params["B"]
+    type_b = st.session_state.varying_protection_measure_parameter_params["type_b"]
+    results = st.session_state.varying_protection_measure_parameter_results
     data = []
     for param_value, result in results.items(): 
         established_f = result["established_facilities"]
@@ -81,7 +81,7 @@ def plot_facility_configuration_vs_protection_measure_parameter():
     ).encode(
         x=alt.X(
             f"{param_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            title=f"{param_name} til {type_name}{param_unit}",
             axis=alt.Axis(labelAngle=0)
         ),
         xOffset=alt.XOffset("Fabrikktype:N"),
@@ -163,36 +163,36 @@ def plot_facility_configuration_vs_protection_measure_parameter():
     st.altair_chart(chart)
 
 def plot_costs_vs_protection_measure_parameter():
-    facility_name = st.session_state.varying_facility_parameter_f_name
-    param_name = st.session_state.varying_facility_parameter_p_name
-    param_unit = " [m³/dag]" if param_name == "Kapasitet" else " [MNOK]" if param_name == "Kostnad" else ""
-    F = st.session_state.varying_facility_parameter_params["F"]
-    B = st.session_state.varying_facility_parameter_params["B"]
-    C_b = st.session_state.varying_facility_parameter_params["C_b"]
-    OR = st.session_state.varying_facility_parameter_params["OR"]
-    results = st.session_state.varying_facility_parameter_results
+    type_name = st.session_state.varying_protection_measure_parameter_type_name
+    param_name = st.session_state.varying_protection_measure_parameter_param_name
+    param_unit = " [MNOK]" if param_name == "Kostnad" else ""
+    F = st.session_state.varying_protection_measure_parameter_params["F"]
+    C_f = st.session_state.varying_protection_measure_parameter_params["C_f"]
+    B = st.session_state.varying_protection_measure_parameter_params["B"]
+    OR = st.session_state.varying_protection_measure_parameter_params["OR"]
+    results = st.session_state.varying_protection_measure_parameter_results
     param_values = []
     facility_costs = []
     protection_measure_costs = []
     total_costs = []
     for param_value, result in results.items():
         param_values.append(param_value)
-        C_f_this = result.get("C_f")
         established_f = result["established_facilities"]
-        facility_cost = sum(C_f_this[f] for f in range(F) if established_f[f]) if C_f_this is not None else 0
+        facility_cost = sum(C_f[f] for f in range(F) if established_f[f])
         facility_costs.append(facility_cost)
         implemented_bf = result["implemented_protection_measures"]
-        protection_measure_cost = sum(C_b[b] * implemented_bf[b][f] for f in range(F) for b in range(B))
+        C_b_this = result.get("C_b")
+        protection_measure_cost = sum(C_b_this[b] * implemented_bf[b][f] for f in range(F) for b in range(B))
         protection_measure_costs.append(protection_measure_cost)
         total_costs.append(facility_cost + protection_measure_cost)
     df = pd.DataFrame({
-        f"{param_name} - {facility_name}": param_values,
+        f"{param_name} - {type_name}": param_values,
         "Totalbudsjett": OR,
         "Kostnad fabrikker": facility_costs,
         "Kostnad beskyttelsestiltak": protection_measure_costs,
         "Totalkostnad": total_costs
     })
-    df_melted = df.melt(id_vars=[f"{param_name} - {facility_name}"],
+    df_melted = df.melt(id_vars=[f"{param_name} - {type_name}"],
                         value_vars=["Totalbudsjett", "Kostnad fabrikker", "Kostnad beskyttelsestiltak", "Totalkostnad"],
                         var_name="Kostnadstype",
                         value_name="Kostnad"
@@ -201,8 +201,8 @@ def plot_costs_vs_protection_measure_parameter():
         point=True
     ).encode(
         x=alt.X(
-            f"{param_name} - {facility_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            f"{param_name} - {type_name}:O",
+            title=f"{param_name} til {type_name}{param_unit}",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -214,6 +214,6 @@ def plot_costs_vs_protection_measure_parameter():
             title="Kostnadstype",
             legend=alt.Legend(orient="bottom")
         ),
-        tooltip=[f"{param_name} - {facility_name}", "Kostnadstype", "Kostnad"]
+        tooltip=[f"{param_name} - {type_name}", "Kostnadstype", "Kostnad"]
     )
     st.altair_chart(chart)
