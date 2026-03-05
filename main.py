@@ -6,11 +6,8 @@ from varying_facility_parameter import display_varying_facility_parameter
 from varying_protection_measure_parameter import display_varying_protection_measure_parameter
 from varying_blue_budget import display_varying_blue_budget
 from varying_red_budget import display_varying_red_budget
-from sensitivity_analysis import display_sensitivity_analysis
-from missile_budget_vs_f_and_ad_budget import display_varying_missile_budget_vs_f_and_ad_budget
-from varying_air_defense_cost import display_varying_air_defense_cost
-from varying_ad_success_rate import display_varying_ad_success_rate
-from combinations import display_combinations
+#from sensitivity_analysis import display_sensitivity_analysis
+#from missile_budget_vs_f_and_ad_budget import display_varying_missile_budget_vs_f_and_ad_budget
 
 st.set_page_config(
     page_title="SAF optimizer",
@@ -44,12 +41,8 @@ analysis = st.sidebar.radio(
         "Varierende beskyttelsestiltak-parameter",
         "Varierende blått budsjett",
         "Varierende rødt budsjett",
-        "Sensitivitetsanalyse",
-        "Varierende kostnad per luftvernmissil",
-        "Varierende suksessrate for luftvern",
-        "Varierende missilbudsjett",
-        "Missilbudsjett vs. fabrikk- og luftvernbudsjett",
-        "Utforsk kombinasjoner"
+        #"Sensitivitetsanalyse",
+        #"Missilbudsjett vs. fabrikk- og luftvernbudsjett"
     ]
 )
 
@@ -70,10 +63,3 @@ elif analysis == "Varierende rødt budsjett":
 #    display_sensitivity_analysis(*model_inputs)
 #elif analysis == "Missilbudsjett vs. fabrikk- og luftvernbudsjett":
 #    display_varying_missile_budget_vs_f_and_ad_budget(*model_inputs)
-#elif analysis == "Varierende kostnad per luftvernmissil":
-#    display_varying_air_defense_cost(*model_inputs)
-#elif analysis == "Varierende suksessrate for luftvern":
-#    display_varying_ad_success_rate(*model_inputs)
-
-#elif analysis == "Utforsk kombinasjoner":
-#    display_combinations(*model_inputs)
