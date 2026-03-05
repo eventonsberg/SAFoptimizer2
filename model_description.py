@@ -2,6 +2,7 @@ import streamlit as st
 
 def display_model_description():
     expander = st.expander("Vis modellbeskrivelse")
+    expander.warning("Gammel modellbeskrivelse - må oppdateres!")
     expander.markdown(
         """
         Dette er en todelt optimeringsmodell som beskriver et samspill mellom en angriper og en forsvarer:  
