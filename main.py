@@ -6,8 +6,8 @@ from varying_facility_parameter import display_varying_facility_parameter
 from varying_protection_measure_parameter import display_varying_protection_measure_parameter
 from varying_blue_budget import display_varying_blue_budget
 from varying_red_budget import display_varying_red_budget
+from blue_vs_red_budget import display_blue_vs_red_budget
 #from sensitivity_analysis import display_sensitivity_analysis
-#from missile_budget_vs_f_and_ad_budget import display_varying_missile_budget_vs_f_and_ad_budget
 
 st.set_page_config(
     page_title="SAF optimizer",
@@ -41,8 +41,8 @@ analysis = st.sidebar.radio(
         "Varierende beskyttelsestiltak-parameter",
         "Varierende blått budsjett",
         "Varierende rødt budsjett",
-        #"Sensitivitetsanalyse",
-        #"Missilbudsjett vs. fabrikk- og luftvernbudsjett"
+        "Blått vs. rødt budsjett",
+        #"Sensitivitetsanalyse"
     ]
 )
 
@@ -59,6 +59,8 @@ elif analysis == "Varierende blått budsjett":
     display_varying_blue_budget(model_inputs)
 elif analysis == "Varierende rødt budsjett":
     display_varying_red_budget(model_inputs)
+elif analysis == "Blått vs. rødt budsjett":
+    display_blue_vs_red_budget(model_inputs)
 #elif analysis == "Sensitivitetsanalyse":
 #    display_sensitivity_analysis(*model_inputs)
 #elif analysis == "Missilbudsjett vs. fabrikk- og luftvernbudsjett":
