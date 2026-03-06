@@ -7,25 +7,11 @@ from varying_protection_measure_parameter import display_varying_protection_meas
 from varying_blue_budget import display_varying_blue_budget
 from varying_red_budget import display_varying_red_budget
 from blue_vs_red_budget import display_blue_vs_red_budget
-#from sensitivity_analysis import display_sensitivity_analysis
+from sensitivity_analysis import display_sensitivity_analysis
 
 st.set_page_config(
     page_title="SAF optimizer",
     page_icon=":material/travel:"
-)
-
-st.markdown( # Adjust appearance of multiselect component
-    """
-    <style>
-    .stMultiSelect [data-baseweb="select"] span {
-        max-width: 100%;
-    }
-    .stMultiSelect [data-baseweb="tag"] {
-        width: 100%;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
 )
 
 display_model_description()
@@ -42,7 +28,7 @@ analysis = st.sidebar.radio(
         "Varierende blått budsjett",
         "Varierende rødt budsjett",
         "Blått vs. rødt budsjett",
-        #"Sensitivitetsanalyse"
+        "Sensitivitetsanalyse"
     ]
 )
 
@@ -61,7 +47,5 @@ elif analysis == "Varierende rødt budsjett":
     display_varying_red_budget(model_inputs)
 elif analysis == "Blått vs. rødt budsjett":
     display_blue_vs_red_budget(model_inputs)
-#elif analysis == "Sensitivitetsanalyse":
-#    display_sensitivity_analysis(*model_inputs)
-#elif analysis == "Missilbudsjett vs. fabrikk- og luftvernbudsjett":
-#    display_varying_missile_budget_vs_f_and_ad_budget(*model_inputs)
+elif analysis == "Sensitivitetsanalyse":
+    display_sensitivity_analysis(model_inputs)

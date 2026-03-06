@@ -2,23 +2,58 @@ import streamlit as st
 from optimizer import solve_interdiction
 from sensitivity_analysis_visualization import plot_sensitivity_analysis
 
-def display_sensitivity_analysis(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f):
-    options = [
-        "Kostnad per luftvernmissil",
-        "Suksessrate for luftvern",
-        "Maks antall luftvernmissiler per fabrikk",
-        "Fabrikk- og luftvernbudsjett",
-        "Missilbudsjett"
-    ]
-    for param in ["Kapasitet", "Kostnad", "Hardhet"]:
-        for facility in set(type_f):
-            options.append(f"{param} - {facility}")
-    selected_params = st.multiselect(
-        "Parametere",
-        options=options,
-        default=options,
-        key="sensitivity_analysis_params"
+def display_sensitivity_analysis(model_inputs):
+    F = model_inputs.get("F")
+    type_f = model_inputs.get("type_f")
+    K_f = model_inputs.get("K_f")
+    H_f = model_inputs.get("H_f")
+    C_f = model_inputs.get("C_f")
+    B = model_inputs.get("B")
+    type_b = model_inputs.get("type_b")
+    C_b = model_inputs.get("C_b")
+    effector_b = model_inputs.get("effector_b")
+    P_b = model_inputs.get("P_b")
+    A_b = model_inputs.get("A_b")
+    OR = model_inputs.get("OR")
+    TE = model_inputs.get("TE")
+
+    facility_options = []
+    for param in ["Kostnad", "Kapasitet", "Hardhet"]:
+        for facility in dict.fromkeys(type_f):
+            facility_options.append(f"{param} - {facility}")
+    selected_facility_params = st.pills(
+        "Velg fabrikkparametere",
+        options=facility_options,
+        default=facility_options,
+        selection_mode="multi",
+        key="sensitivity_analysis_facility_params"
     )
+    effector_b = model_inputs.get("effector_b")
+    type_b = model_inputs.get("type_b")
+    protection_measure_options = []
+    for effector in dict.fromkeys(effector_b):
+        protection_measure_options.append(f"Suksessrate - {effector}")
+    for param in ["Kostnad", "Antall effektorer"]:
+        for protection_measure in dict.fromkeys(type_b):
+            protection_measure_options.append(f"{param} - {protection_measure}")
+    selected_protection_measure_params = st.pills(
+        "Velg beskyttelsestiltak-parametere",
+        options=protection_measure_options,
+        default=protection_measure_options,
+        selection_mode="multi",
+        key="sensitivity_analysis_protection_measure_params"
+    )
+    selected_budget_params = st.pills(
+        "Velg budsjettparametere",
+        options=["Blått budsjett", "Rødt budsjett"],
+        default=["Blått budsjett", "Rødt budsjett"],
+        selection_mode="multi",
+        key="sensitivity_analysis_budget_params"
+    )
+    selected_params = selected_facility_params + selected_protection_measure_params + selected_budget_params
+    if not selected_params:
+        st.warning("Velg minst én parameter for sensitivitetsanalysen")
+        return
     variation = st.number_input(
         "Prosentvis parametervariasjon",
         value=20,
@@ -43,11 +78,8 @@ def display_sensitivity_analysis(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f,
             plot_sensitivity_analysis()
     
     if run_optimization:
-        if selected_params == []:
-            st.error("Velg minst én parameter for sensitivitetsanalysen.")
-            return
         st.session_state.sensitivity_analysis_results = {}
-        base_result = solve_interdiction(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f, C_f,
+        base_result = solve_interdiction(F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
                                         iteration_placeholder=iteration_placeholder,
                                         iteration_detail="Basislinje"
         )
@@ -58,47 +90,56 @@ def display_sensitivity_analysis(P_A, C_A, A_max, B_R, B_B, F, type_f, K_f, H_f,
         variation_values = [-variation, variation]
         for param in selected_params:
             for variation in variation_values:
-                _P_A, _C_A, _A_max, _B_R, _B_B = P_A, C_A, A_max, B_R, B_B
                 _K_f, _H_f, _C_f = K_f.copy(), H_f.copy(), C_f.copy()
+                _C_b, _P_b, _A_b = C_b.copy(), P_b.copy(), A_b.copy()
+                _OR, _TE = OR, TE
                 factor = 1 + (variation / 100)
                 param_value = None
-                if " - " in param:
+                if param in selected_facility_params:
                     param_name, facility_name = param.split(" - ", 1)
-                    if param_name == "Hardhet":
-                        for f in range(F):
-                            if type_f[f] == facility_name:
-                                _H_f[f] = H_f[f] * factor
-                                param_value = _H_f[f]
-                    elif param_name == "Kapasitet":
-                        for f in range(F):
-                            if type_f[f] == facility_name:
-                                _K_f[f] = round(K_f[f] * factor)
-                                param_value = _K_f[f]
-                    elif param_name == "Kostnad":
+                    if param_name == "Kostnad":
                         for f in range(F):
                             if type_f[f] == facility_name:
                                 _C_f[f] = C_f[f] * factor
                                 param_value = _C_f[f]
-                else:
-                    if param == "Kostnad per luftvernmissil":
-                        _C_A = C_A * factor
-                        param_value = _C_A
-                    elif param == "Suksessrate for luftvern":
-                        if P_A * factor > 1.0:
-                            _P_A = 1.0  # Probability cannot exceed 100%
-                        else:
-                            _P_A = P_A * factor
-                        param_value = _P_A
-                    elif param == "Maks antall luftvernmissiler per fabrikk":
-                        _A_max = round(A_max * factor)
-                        param_value = _A_max
-                    elif param == "Fabrikk- og luftvernbudsjett":
-                        _B_B = B_B * factor
-                        param_value = _B_B
-                    elif param == "Missilbudsjett":
-                        _B_R = B_R * factor
-                        param_value = _B_R
-                result = solve_interdiction(_P_A, _C_A, _A_max, _B_R, _B_B, F, type_f, _K_f, _H_f, _C_f,
+                    elif param_name == "Kapasitet":
+                        for f in range(F):
+                            if type_f[f] == facility_name:
+                                _K_f[f] = round(K_f[f] * factor) # Integer
+                                param_value = _K_f[f]
+                    else: # param_name == "Hardhet"
+                        for f in range(F):
+                            if type_f[f] == facility_name:
+                                _H_f[f] = H_f[f] * factor
+                                param_value = _H_f[f]
+                elif param in selected_protection_measure_params:
+                    param_name, type_name = param.split(" - ", 1)
+                    if param_name == "Suksessrate":
+                        for b in range(B):
+                            if effector_b[b] == type_name:
+                                if P_b[b] * factor > 1.0:
+                                    _P_b[b] = 1.0  # Probability cannot exceed 100%
+                                else:
+                                    _P_b[b] = P_b[b] * factor
+                                param_value = _P_b[b]
+                    elif param_name == "Kostnad":
+                        for b in range(B):
+                            if type_b[b] == type_name:
+                                _C_b[b] = C_b[b] * factor
+                                param_value = _C_b[b]
+                    else: # param_name == "Antall effektorer"
+                        for b in range(B):
+                            if type_b[b] == type_name:
+                                _A_b[b] = round(A_b[b] * factor) # Integer
+                                param_value = _A_b[b]
+                else: # Budget parameters
+                    if param == "Blått budsjett":
+                        _OR = OR * factor
+                        param_value = _OR
+                    else: # param == "Rødt budsjett"
+                        _TE = TE * factor
+                        param_value = _TE
+                result = solve_interdiction(F, type_f, _K_f, _H_f, _C_f, B, _C_b, _P_b, _A_b, _OR, _TE,
                                             iteration_placeholder=iteration_placeholder,
                                             iteration_detail=f"{param}: {variation}%"
                 )
