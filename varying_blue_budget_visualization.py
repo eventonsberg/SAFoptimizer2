@@ -23,7 +23,8 @@ def plot_remaining_production_capacity_vs_blue_budget():
         ),
         y=alt.Y(
             "Produksjonskapasitet:Q",
-            title="Produksjonskapasitet [m³/dag]"
+            title="Produksjonskapasitet [m³/dag]",
+            axis=alt.Axis(labelBaseline="middle")
         ),
         tooltip=["Blått budsjett", "Produksjonskapasitet"],
     )
@@ -81,7 +82,8 @@ def plot_facility_configuration_vs_blue_budget():
         xOffset=alt.XOffset("Fabrikktype:N"),
         y=alt.Y(
             "sum(Antall etablert):Q",
-            title="Etablerte fabrikker"
+            title="Etablerte fabrikker",
+            axis=alt.Axis(format="d", labelBaseline="middle")
         ),
         color=alt.Color(
             "Fabrikktype:N",
@@ -197,7 +199,8 @@ def plot_costs_vs_blue_budget():
         ),
         y=alt.Y(
             "Kostnad:Q",
-            title="Kostnad [MNOK]"
+            title="Kostnad [MNOK]",
+            axis=alt.Axis(labelBaseline="middle")
         ),
         color=alt.Color(
             "Kostnadstype:N",
