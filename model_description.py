@@ -2,18 +2,18 @@ import streamlit as st
 
 def display_model_description():
     expander = st.expander("Vis modellbeskrivelse")
-    expander.warning("Gammel modellbeskrivelse - må oppdateres!")
     expander.markdown(
         """
-        Dette er en todelt optimeringsmodell som beskriver et samspill mellom en angriper og en forsvarer:  
-        - :red[**Angriperen**] forsøker å minimere produksjonskapasiteten ved å ødelegge fabrikker med bruk av missiler.  
-        - :blue[**Forsvareren**] prøver å maksimere produksjonskapasiteten ved å sette opp en fabrikkonfigurasjon
-        og fordele luftvernmissiler på en måte som minimerer potensiell skade.  
+        Dette er en todelt optimeringsmodell som representerer et samspill mellom en angriper og en forsvarer:  
+        - :red[**Angriperen**] forsøker å minimere produksjonskapasiteten ved å ødelegge fabrikker med bruk av trusseleffektorer.  
+        - :blue[**Forsvareren**] prøver å maksimere produksjonskapasiteten ved å etablere fabrikker
+        og implementere beskyttelsestiltak på en måte som minimerer potensiell skade.  
         
         Følgende indre- og ytre optimeringsmodell løses,
         hvor den indre modellen representerer angriperens problem og den ytre modellen representerer forsvarerens problem.
         """
     )
+
     expander.subheader("Indre optimeringsmodell")
     expander.markdown(
         """
@@ -54,19 +54,34 @@ def display_model_description():
     )
     expander.latex(
         r"""
-        \sum_{f \in F} (H_f + P_A a_f) d_f \leq B_R
+        \sum_{f \in F} (H_f + N_f) d_f \leq \text{TE}
         """
     )
     expander.markdown(
         """
         | Parameter | Beskrivelse |
         |-----------|--------------|
-        | $H_f$ | Antall treff som kreves for å ødelegge fabrikk $f$ |
-        | $P_A$ | Sannsynlighet for at et luftvernmissil slår ut et innkommende missil |
-        | $a_f$ | Antall luftvernmissiler som beskytter fabrikk $f$ |
-        | $B_R$ | Rødt budsjett -- antall missiler angriperen har til disposisjon |
+        | $H_f$ | Hardheten til fabrikk $f$ -- forventet antall treff som kreves for å ødelegge fabrikken |
+        | $N_f$ | Forventet antall trusseleffektorer som vil nøytraliseres av beskyttelsestiltak ved fabrikk $f$ |
+        | $\\text{TE}$ | Rødt budsjett -- antall trusseleffektorer til disposisjon |
         """
     )
+    expander.latex(
+        r"""
+        N_f = \sum_{b \in B} P_b A_b i_{bf} \quad \forall f \in F
+        """
+    )
+    expander.markdown(
+        """
+        | Parameter | Beskrivelse |
+        |-----------|--------------|
+        | $B$ | Potensielle beskyttelsestiltak |
+        | $P_b$ | Sannsynligheten for at en effektor i beskyttelsestiltak $b$ slår ut en innkommende trussel |
+        | $A_b$ | Antall effektorer i beskyttelsestiltak $b$ |
+        | $i_{bf}$ | Boolsk variabel som indikerer om beskyttelsestiltak $b$ er implementert ved fabrikk $f$ |
+        """
+    )
+
     expander.subheader("Ytre optimeringsmodell")
     expander.markdown(
         """
@@ -76,7 +91,7 @@ def display_model_description():
     )
     expander.latex(
         r"""
-        \max_{e, a} K_{\text{tot}}^*
+        \max_{a,\, e} K_{\text{tot}}^*
         """
     )
     expander.markdown(
@@ -108,34 +123,28 @@ def display_model_description():
     )
     expander.caption(
         """
-        *Et angrepsscenario $s$ er definert som mulig dersom det tilfredsstiller angriperens missilbudsjettbegrensning.*
+        *Et angrepsscenario $s$ er definert som mulig dersom det tilfredsstiller angriperens trusseleffektorbegrensning.*
         """
     )
     expander.markdown(
         """
-        Det gir ikke mening å allokere luftvernmissiler til fabrikker som ikke er etablert.
+        Det gir ikke mening å implementere beskyttelsestiltak ved fabrikker som ikke er etablert,
+        og kun ett beskyttelsestiltak kan implementeres ved hver fabrikk.
         """
     )
     expander.latex(
         r"""
-        a_f \leq A^{\max} e_f \quad \forall f \in F
-        """
-    )
-    expander.markdown(
-        """ 
-        | Parameter | Beskrivelse |
-        |-----------|--------------|
-        | $A^{\\max}$ | Maksimalt antall luftvernmissiler som kan beskytte en fabrikk |
+        \sum_{b \in B} i_{bf} \leq e_f \quad \forall f \in F
         """
     )
     expander.markdown(
         """
-        Etablering av fabrikker og luftvern må gjøres innenfor et gitt budsjett.
+        Etablering av fabrikker og implementering av beskyttelsestiltak må gjøres innenfor et gitt budsjett.
         """
     )
     expander.latex(
         r"""
-        \sum_{f \in F} (C_f e_f + C_A a_f) \leq B_B
+        \sum_{f \in F} \left(C_f e_f + \sum_{b \in B} C_b i_{bf}\right) \leq \text{ØR}
         """
     )
     expander.markdown(
@@ -143,18 +152,19 @@ def display_model_description():
         | Parameter | Beskrivelse |
         |-----------|--------------|
         | $C_f$ | Kostnad for å etablere fabrikk $f$ |
-        | $C_A$ | Kostnad per luftvernmissil |
-        | $B_B$ | Blått budsjett -- ramme for etablering av fabrikker og luftvern |
+        | $C_b$ | Kostnad for å implementere beskyttelsestiltak $b$ |
+        | $\\text{ØR}$ | Blått budsjett -- økonomisk ramme for fabrikker og beskyttelsestiltak |
         """
     )
     expander.subheader("Samspill")
     expander.markdown(
         """
         Det todelte problemet løses ved å kombinere den indre og ytre optimeringsmodellen.
-        Forsvarerens beslutninger om etablering av fabrikker ($e_f$) og allokering av luftvernmissiler ($a_f$)
+        Forsvarerens beslutninger om etablering av fabrikker ($e_f$)
+        og implementering av beskyttelsestiltak ($i_{bf}$)
         påvirker angriperens muligheter til å ødelegge fabrikker ($d_f$).
         Ved å iterere fram og tilbake mellom den indre og ytre modellen,
-        leter man seg fram til en fabrikk- og luftvernkonfigurasjon
+        leter man seg fram til en fabrikk- og beskyttelsestiltak-konfigurasjon
         som maksimerer den gjenværende produksjonskapasiteten
         etter at angriperen har utført sitt mest skadelige angrep innenfor sine begrensninger.
         """
