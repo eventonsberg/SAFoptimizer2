@@ -7,6 +7,7 @@ from varying_protection_measure_parameter import display_varying_protection_meas
 from varying_blue_budget import display_varying_blue_budget
 from varying_red_budget import display_varying_red_budget
 from blue_vs_red_budget import display_blue_vs_red_budget
+from varying_bio_budget import display_varying_bio_budget
 from sensitivity_analysis import display_sensitivity_analysis
 
 st.set_page_config(
@@ -28,6 +29,7 @@ analysis = st.sidebar.radio(
         "Varierende blått budsjett",
         "Varierende rødt budsjett",
         "Blått vs. rødt budsjett",
+        "Varierende biobudsjett",
         "Sensitivitetsanalyse"
     ]
 )
@@ -47,5 +49,7 @@ elif analysis == "Varierende rødt budsjett":
     display_varying_red_budget(model_inputs)
 elif analysis == "Blått vs. rødt budsjett":
     display_blue_vs_red_budget(model_inputs)
+elif analysis == "Varierende biobudsjett":
+    display_varying_bio_budget(model_inputs)
 elif analysis == "Sensitivitetsanalyse":
     display_sensitivity_analysis(model_inputs)

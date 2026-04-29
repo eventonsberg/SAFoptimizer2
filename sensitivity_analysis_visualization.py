@@ -16,11 +16,12 @@ def plot_sensitivity_analysis():
         })
     df = pd.DataFrame(results_list)
     max_variation = df["Endring i produksjonskapasitet"].abs().max()
-    bar = alt.Chart(df).mark_bar().encode(
+    bar = alt.Chart(df).mark_bar(opacity=0.7).encode(
         x=alt.X("Endring i produksjonskapasitet:Q",
                 title="Endring i produksjonskapasitet [m³/dag]",
                 scale=alt.Scale(domain=[-max_variation, max_variation]),
-                axis=alt.Axis(labelAlign="center")
+                axis=alt.Axis(labelAlign="center"),
+                stack=None
         ),
         y=alt.Y("Parameter:N",
                 title="Parameter",

@@ -8,14 +8,16 @@ def display_sensitivity_analysis(model_inputs):
     K_f = model_inputs.get("K_f")
     H_f = model_inputs.get("H_f")
     C_f = model_inputs.get("C_f")
+    beta_f = model_inputs.get("beta_f")
     B = model_inputs.get("B")
     type_b = model_inputs.get("type_b")
     C_b = model_inputs.get("C_b")
     effector_b = model_inputs.get("effector_b")
     P_b = model_inputs.get("P_b")
     A_b = model_inputs.get("A_b")
-    OR = model_inputs.get("OR")
-    TE = model_inputs.get("TE")
+    OE = model_inputs.get("OE")
+    T = model_inputs.get("T")
+    R = model_inputs.get("R")
 
     facility_options = []
     for param in ["Kostnad", "Kapasitet", "Hardhet"]:
@@ -45,8 +47,8 @@ def display_sensitivity_analysis(model_inputs):
     )
     selected_budget_params = st.pills(
         "Velg budsjettparametere",
-        options=["Blått budsjett", "Rødt budsjett"],
-        default=["Blått budsjett", "Rødt budsjett"],
+        options=["Blått budsjett", "Rødt budsjett", "Biobudsjett"],
+        default=["Blått budsjett", "Rødt budsjett", "Biobudsjett"],
         selection_mode="multi",
         key="sensitivity_analysis_budget_params"
     )
@@ -79,7 +81,7 @@ def display_sensitivity_analysis(model_inputs):
     
     if run_optimization:
         st.session_state.sensitivity_analysis_results = {}
-        base_result = solve_interdiction(F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
+        base_result = solve_interdiction(F, type_f, K_f, H_f, C_f, beta_f, B, C_b, P_b, A_b, OE, T, R,
                                         iteration_placeholder=iteration_placeholder,
                                         iteration_detail="Basislinje"
         )
@@ -92,7 +94,7 @@ def display_sensitivity_analysis(model_inputs):
             for variation in variation_values:
                 _K_f, _H_f, _C_f = K_f.copy(), H_f.copy(), C_f.copy()
                 _C_b, _P_b, _A_b = C_b.copy(), P_b.copy(), A_b.copy()
-                _OR, _TE = OR, TE
+                _OE, _T, _R = OE, T, R
                 factor = 1 + (variation / 100)
                 param_value = None
                 if param in selected_facility_params:
@@ -134,12 +136,15 @@ def display_sensitivity_analysis(model_inputs):
                                 param_value = _A_b[b]
                 else: # Budget parameters
                     if param == "Blått budsjett":
-                        _OR = OR * factor
-                        param_value = _OR
-                    else: # param == "Rødt budsjett"
-                        _TE = TE * factor
-                        param_value = _TE
-                result = solve_interdiction(F, type_f, _K_f, _H_f, _C_f, B, _C_b, _P_b, _A_b, _OR, _TE,
+                        _OE = OE * factor
+                        param_value = _OE
+                    elif param == "Rødt budsjett":
+                        _T = T * factor
+                        param_value = _T
+                    elif param == "Biobudsjett":
+                        _R = round(R * factor) # Integer
+                        param_value = _R
+                result = solve_interdiction(F, type_f, _K_f, _H_f, _C_f, beta_f, B, _C_b, _P_b, _A_b, _OE, _T, _R,
                                             iteration_placeholder=iteration_placeholder,
                                             iteration_detail=f"{param}: {variation}%"
                 )

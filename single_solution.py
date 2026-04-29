@@ -9,13 +9,15 @@ def display_single_solution(model_inputs):
     K_f = model_inputs.get("K_f")
     H_f = model_inputs.get("H_f")
     C_f = model_inputs.get("C_f")
+    beta_f = model_inputs.get("beta_f")
     B = model_inputs.get("B")
     type_b = model_inputs.get("type_b")
     C_b = model_inputs.get("C_b")
     P_b = model_inputs.get("P_b")
     A_b = model_inputs.get("A_b")
-    OR = model_inputs.get("OR")
-    TE = model_inputs.get("TE")
+    OE = model_inputs.get("OE")
+    T = model_inputs.get("T")
+    R = model_inputs.get("R")
 
     if "single_solution_params" not in st.session_state:
         st.session_state.single_solution_params = {}
@@ -33,7 +35,7 @@ def display_single_solution(model_inputs):
 
     if run_optimization:
         results = solve_interdiction(
-            F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
+            F, type_f, K_f, H_f, C_f, beta_f, B, C_b, P_b, A_b, OE, T, R,
             iteration_placeholder=iteration_placeholder
         )
         if results["status"] != "OPTIMAL":

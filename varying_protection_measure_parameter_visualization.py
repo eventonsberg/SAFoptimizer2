@@ -171,7 +171,7 @@ def plot_costs_vs_protection_measure_parameter():
     F = st.session_state.varying_protection_measure_parameter_params["F"]
     C_f = st.session_state.varying_protection_measure_parameter_params["C_f"]
     B = st.session_state.varying_protection_measure_parameter_params["B"]
-    OR = st.session_state.varying_protection_measure_parameter_params["OR"]
+    OE = st.session_state.varying_protection_measure_parameter_params["OE"]
     results = st.session_state.varying_protection_measure_parameter_results
     param_values = []
     facility_costs = []
@@ -189,7 +189,7 @@ def plot_costs_vs_protection_measure_parameter():
         total_costs.append(facility_cost + protection_measure_cost)
     df = pd.DataFrame({
         f"{param_name} - {type_name}": param_values,
-        "Totalbudsjett": OR,
+        "Totalbudsjett": OE,
         "Kostnad fabrikker": facility_costs,
         "Kostnad beskyttelsestiltak": protection_measure_costs,
         "Totalkostnad": total_costs

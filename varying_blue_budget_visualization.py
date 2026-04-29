@@ -168,8 +168,8 @@ def plot_costs_vs_blue_budget():
     facility_costs = []
     protection_measure_costs = []
     total_costs = []
-    for OR, result in results.items():
-        blue_budgets.append(OR)
+    for OE, result in results.items():
+        blue_budgets.append(OE)
         established_f = result["established_facilities"]
         facility_cost = sum(C_f[f] for f in range(F) if established_f[f])
         facility_costs.append(facility_cost)

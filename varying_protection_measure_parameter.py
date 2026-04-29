@@ -13,14 +13,16 @@ def display_varying_protection_measure_parameter(model_inputs):
     K_f = model_inputs.get("K_f")
     H_f = model_inputs.get("H_f")
     C_f = model_inputs.get("C_f")
+    beta_f = model_inputs.get("beta_f")
     B = model_inputs.get("B")
     type_b = model_inputs.get("type_b")
     C_b = model_inputs.get("C_b")
     effector_b = model_inputs.get("effector_b")
     P_b = model_inputs.get("P_b")
     A_b = model_inputs.get("A_b")
-    OR = model_inputs.get("OR")
-    TE = model_inputs.get("TE")
+    OE = model_inputs.get("OE")
+    T = model_inputs.get("T")
+    R = model_inputs.get("R")
 
     dimension = st.segmented_control(
         "Velg parameterdimensjon",
@@ -125,7 +127,7 @@ def display_varying_protection_measure_parameter(model_inputs):
                             C_b_mod[b] = param_value
                         elif param_name == "Antall effektorer":
                             A_b_mod[b] = int(param_value)
-            result = solve_interdiction(F, type_f, K_f, H_f, C_f, B, C_b_mod, P_b_mod, A_b_mod, OR, TE, 
+            result = solve_interdiction(F, type_f, K_f, H_f, C_f, beta_f, B, C_b_mod, P_b_mod, A_b_mod, OE, T, R,
                                         iteration_placeholder=iteration_placeholder,
                                         iteration_detail=f"{param_name}: {param_value}"
             )
@@ -140,7 +142,7 @@ def display_varying_protection_measure_parameter(model_inputs):
                 "C_f": C_f,
                 "B": B,
                 "type_b": type_b,
-                "OR": OR
+                "OE": OE
             }
             # Store C_b_mod in the result for correct cost plotting
             result["C_b"] = C_b_mod.copy()

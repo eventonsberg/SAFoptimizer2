@@ -54,7 +54,7 @@ def display_model_description():
     )
     expander.latex(
         r"""
-        \sum_{f \in F} (H_f + N_f) d_f \leq \text{TE}
+        \sum_{f \in F} (H_f + N_f) d_f \leq T
         """
     )
     expander.markdown(
@@ -63,7 +63,7 @@ def display_model_description():
         |-----------|--------------|
         | $H_f$ | Hardheten til fabrikk $f$ -- forventet antall treff som kreves for å ødelegge fabrikken |
         | $N_f$ | Forventet antall trusseleffektorer som vil nøytraliseres av beskyttelsestiltak ved fabrikk $f$ |
-        | $\\text{TE}$ | Rødt budsjett -- antall trusseleffektorer til disposisjon |
+        | $T$ | Rødt budsjett -- antall trusseleffektorer til disposisjon |
         """
     )
     expander.latex(
@@ -144,7 +144,7 @@ def display_model_description():
     )
     expander.latex(
         r"""
-        \sum_{f \in F} \left(C_f e_f + \sum_{b \in B} C_b i_{bf}\right) \leq \text{ØR}
+        \sum_{f \in F} \left(C_f e_f + \sum_{b \in B} C_b i_{bf}\right) \leq Ø
         """
     )
     expander.markdown(
@@ -153,7 +153,25 @@ def display_model_description():
         |-----------|--------------|
         | $C_f$ | Kostnad for å etablere fabrikk $f$ |
         | $C_b$ | Kostnad for å implementere beskyttelsestiltak $b$ |
-        | $\\text{ØR}$ | Blått budsjett -- økonomisk ramme for fabrikker og beskyttelsestiltak |
+        | $Ø$ | Blått budsjett -- økonomisk ramme for fabrikker og beskyttelsestiltak |
+        """
+    )
+    expander.markdown(
+        """
+        Tilgjengelige biomasseressurser setter en øvre grense for totalproduksjonen av biodrivstoff.
+        """
+    )
+    expander.latex(
+        r"""
+        \sum_{f \in F} K_f e_f \beta_f \leq R
+        """
+    )
+    expander.markdown(
+        """
+        | Parameter | Beskrivelse |
+        |-----------|--------------|
+        | $\\beta_f$ | Boolsk indikator som angir om fabrikk $f$ produserer biodrivstoff |
+        | $R$ | Biobudsjett -- maksimal totalproduksjon av biodrivstoff |
         """
     )
     expander.subheader("Samspill")

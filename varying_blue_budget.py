@@ -12,12 +12,14 @@ def display_varying_blue_budget(model_inputs):
     K_f = model_inputs.get("K_f")
     H_f = model_inputs.get("H_f")
     C_f = model_inputs.get("C_f")
+    beta_f = model_inputs.get("beta_f")
     B = model_inputs.get("B")
     type_b = model_inputs.get("type_b")
     C_b = model_inputs.get("C_b")
     P_b = model_inputs.get("P_b")
     A_b = model_inputs.get("A_b")
-    TE = model_inputs.get("TE")
+    T = model_inputs.get("T")
+    R = model_inputs.get("R")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -68,14 +70,14 @@ def display_varying_blue_budget(model_inputs):
             return
         blue_budget_values = list(range(min_budget, max_budget + 1, budget_step))
         st.session_state.varying_blue_budget_results = {}
-        for OR in blue_budget_values:
+        for OE in blue_budget_values:
             result = solve_interdiction(
-                F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
+                F, type_f, K_f, H_f, C_f, beta_f, B, C_b, P_b, A_b, OE, T, R,
                 iteration_placeholder=iteration_placeholder,
-                iteration_detail=f"Blått budsjett: {OR}"
+                iteration_detail=f"Blått budsjett: {OE}"
             )
             if result["status"] != "OPTIMAL":
-                st.error(f"Optimeringen feilet for blått budsjett {OR} med status: {result['status']}")
+                st.error(f"Optimeringen feilet for blått budsjett {OE} med status: {result['status']}")
                 continue
             st.session_state.varying_blue_budget_params = {
                 "F": F,
@@ -85,7 +87,7 @@ def display_varying_blue_budget(model_inputs):
                 "type_b": type_b,
                 "C_b": C_b
             }
-            st.session_state.varying_blue_budget_results[OR] = result
+            st.session_state.varying_blue_budget_results[OE] = result
             with chart_placeholder.container():
                 st.subheader("Gjenværende produksjonskapasitet etter angrep")
                 plot_remaining_production_capacity_vs_blue_budget()

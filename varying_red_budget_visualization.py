@@ -163,14 +163,14 @@ def plot_costs_vs_red_budget():
     C_f = st.session_state.varying_red_budget_params["C_f"]
     B = st.session_state.varying_red_budget_params["B"]
     C_b = st.session_state.varying_red_budget_params["C_b"]
-    OR = st.session_state.varying_red_budget_params["OR"]
+    OE = st.session_state.varying_red_budget_params["OE"]
     results = st.session_state.varying_red_budget_results
     red_budgets = []
     facility_costs = []
     protection_measure_costs = []
     total_costs = []
-    for TE, result in results.items():
-        red_budgets.append(TE)
+    for T, result in results.items():
+        red_budgets.append(T)
         established_f = result["established_facilities"]
         facility_cost = sum(C_f[f] for f in range(F) if established_f[f])
         facility_costs.append(facility_cost)
@@ -180,7 +180,7 @@ def plot_costs_vs_red_budget():
         total_costs.append(facility_cost + protection_measure_cost)
     df = pd.DataFrame({
         "Rødt budsjett": red_budgets,
-        "Totalbudsjett": OR,
+        "Totalbudsjett": OE,
         "Kostnad fabrikker": facility_costs,
         "Kostnad beskyttelsestiltak": protection_measure_costs,
         "Totalkostnad": total_costs

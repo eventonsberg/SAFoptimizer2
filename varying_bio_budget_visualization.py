@@ -2,26 +2,23 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-def plot_remaining_production_capacity_vs_facility_parameter():
-    facility_name = st.session_state.varying_facility_parameter_f_name
-    param_name = st.session_state.varying_facility_parameter_p_name
-    param_unit = " [m³/dag]" if param_name == "Kapasitet" else " [MNOK]" if param_name == "Kostnad" else ""
-    results = st.session_state.varying_facility_parameter_results
-    param_values = []
+def plot_remaining_production_capacity_vs_bio_budget():
+    results = st.session_state.varying_bio_budget_results
+    bio_budgets = []
     remaining_capacities = []
-    for param_value, result in results.items():
-        param_values.append(param_value)
+    for budget, result in results.items():
+        bio_budgets.append(budget)
         remaining_capacities.append(result["remaining_production_capacity_after_attack"])
     df = pd.DataFrame({
-        param_name: param_values,
+        "Biobudsjett": bio_budgets,
         "Produksjonskapasitet": remaining_capacities
     })
     chart = alt.Chart(df).mark_line(
         point=True
     ).encode(
         x=alt.X(
-            f"{param_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            "Biobudsjett:O",
+            title="Biobudsjett [m³/dag]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -29,21 +26,18 @@ def plot_remaining_production_capacity_vs_facility_parameter():
             title="Produksjonskapasitet [m³/dag]",
             axis=alt.Axis(labelBaseline="middle")
         ),
-        tooltip=[param_name, "Produksjonskapasitet"],
+        tooltip=["Biobudsjett", "Produksjonskapasitet"],
     )
     st.altair_chart(chart)
 
-def plot_facility_configuration_vs_facility_parameter():
-    facility_name = st.session_state.varying_facility_parameter_f_name
-    param_name = st.session_state.varying_facility_parameter_p_name
-    param_unit = " [m³/dag]" if param_name == "Kapasitet" else " [MNOK]" if param_name == "Kostnad" else ""
-    F = st.session_state.varying_facility_parameter_params["F"]
-    type_f = st.session_state.varying_facility_parameter_params["type_f"]
-    B = st.session_state.varying_facility_parameter_params["B"]
-    type_b = st.session_state.varying_facility_parameter_params["type_b"]
-    results = st.session_state.varying_facility_parameter_results
+def plot_facility_configuration_vs_bio_budget():
+    F = st.session_state.varying_bio_budget_params["F"]
+    type_f = st.session_state.varying_bio_budget_params["type_f"]
+    B = st.session_state.varying_bio_budget_params["B"]
+    type_b = st.session_state.varying_bio_budget_params["type_b"]
+    results = st.session_state.varying_bio_budget_results
     data = []
-    for param_value, result in results.items(): 
+    for budget, result in results.items():
         established_f = result["established_facilities"]
         implemented_bf = result["implemented_protection_measures"]
         destroyed_f = result["destroyed_facilities"]
@@ -59,7 +53,7 @@ def plot_facility_configuration_vs_facility_parameter():
                 if protection_measure_types:
                     protection_measure_string = ", ".join(protection_measure_types)
                 data.append({
-                    f"{param_name}": param_value,
+                    "Biobudsjett": budget,
                     "Fabrikktype": facility,
                     "FabrikkID": f"{facility} #{facility_counters[facility]}",
                     "Antall etablert": 1,
@@ -68,7 +62,7 @@ def plot_facility_configuration_vs_facility_parameter():
                 })
         if not any(established_f):
             data.append({ # Avoid empty dataframe if no facilities are established
-                f"{param_name}": param_value,
+                "Biobudsjett": budget,
                 "Fabrikktype": None,
                 "FabrikkID": None,
                 "Antall etablert": None,
@@ -81,8 +75,8 @@ def plot_facility_configuration_vs_facility_parameter():
         align="center"
     ).encode(
         x=alt.X(
-            f"{param_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            "Biobudsjett:O",
+            title="Biobudsjett [m³/dag]",
             axis=alt.Axis(labelAngle=0)
         ),
         xOffset=alt.XOffset("Fabrikktype:N"),
@@ -118,7 +112,7 @@ def plot_facility_configuration_vs_facility_parameter():
                 symbolFillColor="transparent"
             )
         ),
-        tooltip=[param_name, "FabrikkID", "Beskyttelsestiltak", "Ødelagt"],
+        tooltip=["Biobudsjett", "FabrikkID", "Beskyttelsestiltak", "Ødelagt"],
     )
     protection_measures_df = df[df["Beskyttelsestiltak"] != ""]
     if protection_measures_df.empty:
@@ -127,7 +121,7 @@ def plot_facility_configuration_vs_facility_parameter():
         point = ( # Overlay symbols for protection measures on top of the bar chart
             alt.Chart(protection_measures_df).transform_window(
                 stack_index='row_number()',
-                groupby=[param_name, "Fabrikktype"],
+                groupby=["Biobudsjett", "Fabrikktype"],
                 sort=[
                     alt.SortField("Ødelagt", order="ascending"),
                     alt.SortField("FabrikkID", order="ascending")
@@ -140,7 +134,7 @@ def plot_facility_configuration_vs_facility_parameter():
                 size=80,
                 strokeWidth=2
             ).encode(
-                x=alt.X(f"{param_name}:O"),
+                x=alt.X("Biobudsjett:O"),
                 xOffset=alt.XOffset("Fabrikktype:N"),
                 y=alt.Y(
                     "LabelPos:Q"
@@ -158,43 +152,40 @@ def plot_facility_configuration_vs_facility_parameter():
                         symbolStrokeWidth=3
                     )
                 ),
-                tooltip=[param_name, "FabrikkID", "Beskyttelsestiltak", "Ødelagt"]
+                tooltip=["Biobudsjett", "FabrikkID", "Beskyttelsestiltak", "Ødelagt"]
             )
         )
         chart = bar + point
     st.altair_chart(chart)
 
-def plot_costs_vs_facility_parameter():
-    facility_name = st.session_state.varying_facility_parameter_f_name
-    param_name = st.session_state.varying_facility_parameter_p_name
-    param_unit = " [m³/dag]" if param_name == "Kapasitet" else " [MNOK]" if param_name == "Kostnad" else ""
-    F = st.session_state.varying_facility_parameter_params["F"]
-    B = st.session_state.varying_facility_parameter_params["B"]
-    C_b = st.session_state.varying_facility_parameter_params["C_b"]
-    OE = st.session_state.varying_facility_parameter_params["OE"]
-    results = st.session_state.varying_facility_parameter_results
-    param_values = []
+def plot_costs_vs_bio_budget():
+    F = st.session_state.varying_bio_budget_params["F"]
+    C_f = st.session_state.varying_bio_budget_params["C_f"]
+    B = st.session_state.varying_bio_budget_params["B"]
+    C_b = st.session_state.varying_bio_budget_params["C_b"]
+    OE = st.session_state.varying_bio_budget_params["OE"]
+    results = st.session_state.varying_bio_budget_results
+    bio_budgets = []
     facility_costs = []
     protection_measure_costs = []
     total_costs = []
-    for param_value, result in results.items():
-        param_values.append(param_value)
-        C_f_this = result.get("C_f")
+    for R, result in results.items():
+        bio_budgets.append(R)
         established_f = result["established_facilities"]
-        facility_cost = sum(C_f_this[f] for f in range(F) if established_f[f])
+        facility_cost = sum(C_f[f] for f in range(F) if established_f[f])
         facility_costs.append(facility_cost)
         implemented_bf = result["implemented_protection_measures"]
         protection_measure_cost = sum(C_b[b] * implemented_bf[b][f] for f in range(F) for b in range(B))
         protection_measure_costs.append(protection_measure_cost)
         total_costs.append(facility_cost + protection_measure_cost)
     df = pd.DataFrame({
-        f"{param_name} - {facility_name}": param_values,
+        "Biobudsjett": bio_budgets,
         "Totalbudsjett": OE,
         "Kostnad fabrikker": facility_costs,
         "Kostnad beskyttelsestiltak": protection_measure_costs,
         "Totalkostnad": total_costs
     })
-    df_melted = df.melt(id_vars=[f"{param_name} - {facility_name}"],
+    df_melted = df.melt(id_vars=["Biobudsjett"],
                         value_vars=["Totalbudsjett", "Kostnad fabrikker", "Kostnad beskyttelsestiltak", "Totalkostnad"],
                         var_name="Kostnadstype",
                         value_name="Kostnad"
@@ -203,8 +194,8 @@ def plot_costs_vs_facility_parameter():
         point=True
     ).encode(
         x=alt.X(
-            f"{param_name} - {facility_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            "Biobudsjett:O",
+            title="Biobudsjett [m³/dag]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -217,6 +208,6 @@ def plot_costs_vs_facility_parameter():
             title="Kostnadstype",
             legend=alt.Legend(orient="bottom")
         ),
-        tooltip=[f"{param_name} - {facility_name}", "Kostnadstype", "Kostnad"]
+        tooltip=["Biobudsjett", "Kostnadstype", "Kostnad"]
     )
     st.altair_chart(chart)

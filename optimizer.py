@@ -5,11 +5,11 @@ def scale_int(value, scale=100):
     # Help function to scale float to int for CP-SAT
     return int(round(value * scale))
 
-def minimize_production_capacity(e_f, i_bf, F, K_f, H_f, B, P_b, A_b, TE, scale=100):
+def minimize_production_capacity(e_f, i_bf, F, K_f, H_f, B, P_b, A_b, T, scale=100):
     # Scale parameters to ensure integers for CP-SAT solver
     int_H_f = [scale_int(H_f[f], scale) for f in range(F)]
     int_P_b = [scale_int(P_b[b], scale) for b in range(B)]
-    int_TE = scale_int(TE, scale)
+    int_T = scale_int(T, scale)
     
     # Model
     model = cp_model.CpModel()
@@ -26,7 +26,7 @@ def minimize_production_capacity(e_f, i_bf, F, K_f, H_f, B, P_b, A_b, TE, scale=
     int_N_f = [sum(int_P_b[b] * A_b[b] * i_bf[b][f] for b in range(B)) for f in range(F)]
     int_effector_cost_f = [int_H_f[f] + int_N_f[f] for f in range(F)]
     model.Add(
-        sum(int_effector_cost_f[f] * d_f[f] for f in range(F)) <= int_TE # Red budget constraint
+        sum(int_effector_cost_f[f] * d_f[f] for f in range(F)) <= int_T # Red budget constraint
     )
 
     # Objective
@@ -48,7 +48,7 @@ def minimize_production_capacity(e_f, i_bf, F, K_f, H_f, B, P_b, A_b, TE, scale=
     return destroyed_f, effector_cost_f, production_capacity
 
 def maximize_remaining_production_capacity(
-        F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
+        F, type_f, K_f, H_f, C_f, beta_f, B, C_b, P_b, A_b, OE, T, R,
         scenarios, with_tie_breakers=True, scale=100
     ):
     # Scale parameters to ensure integers for CP-SAT solver
@@ -56,8 +56,8 @@ def maximize_remaining_production_capacity(
     int_C_f = [scale_int(C_f[f], scale) for f in range(F)]
     int_C_b = [scale_int(C_b[b], scale) for b in range(B)]
     int_P_b = [scale_int(P_b[b], scale) for b in range(B)]
-    int_OR = scale_int(OR, scale)
-    int_TE = scale_int(TE, scale)
+    int_OE = scale_int(OE, scale)
+    int_T = scale_int(T, scale)
 
     # Model
     model = cp_model.CpModel()
@@ -75,10 +75,10 @@ def maximize_remaining_production_capacity(
     for s, d_f_s in enumerate(scenarios):
         phi_s = model.NewBoolVar(f'phi_{s}') # Boolean variable indicating if scenario s is feasible with the current protection measures
         model.Add(
-            sum(int_effector_cost_f[f] * d_f_s[f] for f in range(F)) <= int_TE
+            sum(int_effector_cost_f[f] * d_f_s[f] for f in range(F)) <= int_T
         ).OnlyEnforceIf(phi_s) # Ensures that phi_s is set to 0 if scenario s is infeasible
         model.Add(
-            sum(int_effector_cost_f[f] * d_f_s[f] for f in range(F)) >= int_TE + 1
+            sum(int_effector_cost_f[f] * d_f_s[f] for f in range(F)) >= int_T + 1
         ).OnlyEnforceIf(phi_s.Not()) # Ensures that phi_s is set to 1 if scenario s is feasible
         model.Add(
             K_tot_star <= sum(K_f[f] * e_f[f] * (1 - d_f_s[f]) for f in range(F))
@@ -92,8 +92,13 @@ def maximize_remaining_production_capacity(
     int_facility_cost_f = [int_C_f[f] * e_f[f] for f in range(F)]
     int_protection_measure_cost_f = [sum(int_C_b[b] * i_bf[b][f] for b in range(B)) for f in range(F)]
     model.Add(
-        sum(int_facility_cost_f[f] + int_protection_measure_cost_f[f] for f in range(F)) <= int_OR
+        sum(int_facility_cost_f[f] + int_protection_measure_cost_f[f] for f in range(F)) <= int_OE
     ) # Blue budget constraint
+
+    for f in range(F):
+        model.Add(
+            sum(K_f[f] * e_f[f] * beta_f[f] for f in range(F)) <= R
+        ) # Bio budget constraint
 
     # Symmetry breaking
     type_f_prev = type_f[0]
@@ -150,7 +155,7 @@ def maximize_remaining_production_capacity(
     remaining_production_capacity = int(solver.Value(K_tot_star))
     return established_f, implemented_bf, remaining_production_capacity, status
 
-def solve_interdiction(F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
+def solve_interdiction(F, type_f, K_f, H_f, C_f, beta_f, B, C_b, P_b, A_b, OE, T, R,
                        max_iters=200, iteration_placeholder=None, iteration_detail=None,
                        with_tie_breakers=True, scale=100):
     scenarios = [] # List of attack scenarios
@@ -162,12 +167,12 @@ def solve_interdiction(F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
             else:
                 iteration_placeholder.markdown(f":red-badge[Iterasjon: {it}]")
         e_f, i_bf, K_tot_star, status = maximize_remaining_production_capacity(
-            F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
+            F, type_f, K_f, H_f, C_f, beta_f, B, C_b, P_b, A_b, OE, T, R,
             scenarios, with_tie_breakers=with_tie_breakers, scale=scale
         )
         if status not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
             return {"status": "INFEASABLE", "history": history}
-        d_f, effector_cost_f, production_capacity = minimize_production_capacity(e_f, i_bf, F, K_f, H_f, B, P_b, A_b, TE, scale=scale)
+        d_f, effector_cost_f, production_capacity = minimize_production_capacity(e_f, i_bf, F, K_f, H_f, B, P_b, A_b, T, scale=scale)
         if d_f is None:
             return {"status": "SUBPROBLEM_INFEASABLE", "history": history}
         K_tot_gap = K_tot_star - production_capacity

@@ -12,10 +12,12 @@ def display_blue_vs_red_budget(model_inputs):
     K_f = model_inputs.get("K_f")
     H_f = model_inputs.get("H_f")
     C_f = model_inputs.get("C_f")
+    beta_f = model_inputs.get("beta_f")
     B = model_inputs.get("B")
     C_b = model_inputs.get("C_b")
     P_b = model_inputs.get("P_b")
     A_b = model_inputs.get("A_b")
+    R = model_inputs.get("R")
 
     col1_1, col2_1 = st.columns(2)
     with col1_1:
@@ -96,17 +98,17 @@ def display_blue_vs_red_budget(model_inputs):
         blue_budget_values = list(range(min_blue_budget, max_blue_budget + 1, blue_budget_step))
         red_budget_values = list(range(min_red_budget, max_red_budget + 1, red_budget_step))
         st.session_state.varying_blue_vs_red_budget_results = {}
-        for TE in red_budget_values:
-            for OR in blue_budget_values:
-                result = solve_interdiction(F, type_f, K_f, H_f, C_f, B, C_b, P_b, A_b, OR, TE,
+        for T in red_budget_values:
+            for OE in blue_budget_values:
+                result = solve_interdiction(F, type_f, K_f, H_f, C_f, beta_f, B, C_b, P_b, A_b, OE, T, R,
                                             iteration_placeholder=iteration_placeholder,
-                                            iteration_detail=f"Blått budsjett: {OR}, Rødt budsjett: {TE}",
+                                            iteration_detail=f"Blått budsjett: {OE}, Rødt budsjett: {T}",
                                             with_tie_breakers=False
                 )
                 if result["status"] != "OPTIMAL":
-                    st.error(f"Optimeringen feilet for  blått budsjett {OR} og rødt budsjett {TE} med status: {result['status']}")
+                    st.error(f"Optimeringen feilet for  blått budsjett {OE} og rødt budsjett {T} med status: {result['status']}")
                     continue
-                st.session_state.varying_blue_vs_red_budget_results[(OR, TE)] = result
+                st.session_state.varying_blue_vs_red_budget_results[(OE, T)] = result
                 with chart_placeholder.container():
                     st.subheader("Gjenværende produksjonskapasitet etter angrep")
                     plot_blue_vs_red_budget_heatmap()

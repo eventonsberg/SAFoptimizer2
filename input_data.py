@@ -7,21 +7,24 @@ potential_facilities = pd.DataFrame([
         "Kostnad": 0,
         "Kapasitet": 500,
         "Hardhet": 3.0,
-        "Maks antall": 1
+        "Maks antall": 1,
+        "Biodrivstoff": False
     }, 
     {
         "Fabrikk": "SAF-anlegg (liten)",
         "Kostnad": 20,
         "Kapasitet": 20,
         "Hardhet": 3.0,
-        "Maks antall": 20
+        "Maks antall": 20,
+        "Biodrivstoff": True
     },
     {
         "Fabrikk": "SAF-anlegg (stor)",
         "Kostnad": 100,
         "Kapasitet": 200,
         "Hardhet": 3.0,
-        "Maks antall": 10
+        "Maks antall": 10,
+        "Biodrivstoff": True
     }
 ])
 
@@ -49,7 +52,8 @@ potential_measures = pd.DataFrame([
 
 restrictions = {
     "Blått budsjett": 250,
-    "Rødt budsjett": 5
+    "Rødt budsjett": 5,
+    "Biobudsjett": 400
 }
 
 def display_input_fields():
@@ -62,7 +66,8 @@ def display_input_fields():
             "Kostnad": st.column_config.NumberColumn(format="localized", required=True),
             "Kapasitet": st.column_config.NumberColumn(format="localized", required=True),
             "Hardhet": st.column_config.NumberColumn(required=True),
-            "Maks antall": st.column_config.NumberColumn(required=True)
+            "Maks antall": st.column_config.NumberColumn(required=True),
+            "Biodrivstoff": st.column_config.CheckboxColumn(default=False)
         },
         key="potential_facilities"
     )
@@ -104,6 +109,13 @@ def display_input_fields():
             step=1,
             min_value=0,
             format="%d"
+        ),
+        "bio_budget": st.number_input(
+            "Biobudsjett - maksimal totalproduksjon av biodrivstoff",
+            value=restrictions["Biobudsjett"],
+            step=1,
+            min_value=0,
+            format="%d"
         )
     }
     return {
@@ -120,6 +132,7 @@ def format_model_inputs(input_data):
     C_f = [] # Cost of facility f
     K_f = [] # Production capacity of facility f
     H_f = [] # Number of hits required to destroy facility f
+    beta_f = [] # Boolean indicating if facility f is a biofuel production facility
     for f_type in range(len(potential_facilities)):
         max_units = int(potential_facilities.iloc[f_type]["Maks antall"])
         for _ in range(max_units):
@@ -128,6 +141,7 @@ def format_model_inputs(input_data):
             C_f.append(float(potential_facilities.iloc[f_type]["Kostnad"]))
             K_f.append(int(potential_facilities.iloc[f_type]["Kapasitet"]))
             H_f.append(float(potential_facilities.iloc[f_type]["Hardhet"]))
+            beta_f.append(bool(potential_facilities.iloc[f_type]["Biodrivstoff"]))
     effectors = input_data["effectors"]
     potential_measures = input_data["potential_measures"]
     B = len(potential_measures) # Number of potential protective measures
@@ -144,20 +158,23 @@ def format_model_inputs(input_data):
         success_rate = effectors.loc[effectors["Effektor"] == effector, "Suksessrate"].values[0]
         P_b.append(float(success_rate))
         A_b.append(int(potential_measures.iloc[b]["Antall effektorer"]))
-    OR = float(input_data["restrictions"]["blue_budget"]) # Blue budget - financial constraint
-    TE = float(input_data["restrictions"]["red_budget"]) # Red budget - number of threat effectors available
+    OE = float(input_data["restrictions"]["blue_budget"]) # Blue budget - financial constraint
+    T = float(input_data["restrictions"]["red_budget"]) # Red budget - number of threat effectors available
+    R = int(input_data["restrictions"]["bio_budget"]) # Bio budget - maximum total biofuel production
     return {
         "F": F,
         "type_f": type_f,
         "K_f": K_f,
         "H_f": H_f,
         "C_f": C_f,
+        "beta_f": beta_f,
         "B": B,
         "type_b": type_b,
         "C_b": C_b,
         "effector_b": effector_b,
         "P_b": P_b,
         "A_b": A_b,
-        "OR": OR,
-        "TE": TE
+        "OE": OE,
+        "T": T,
+        "R": R
     }
