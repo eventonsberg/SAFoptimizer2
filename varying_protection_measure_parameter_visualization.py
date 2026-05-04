@@ -76,6 +76,7 @@ def plot_facility_configuration_vs_protection_measure_parameter():
                 "Ødelagt": False
             })
     df = pd.DataFrame(data)
+    present_facility_types = list(dict.fromkeys(df["Fabrikktype"].dropna()))
     bar = alt.Chart(df).mark_bar(
         strokeWidth=3,
         align="center"
@@ -83,9 +84,12 @@ def plot_facility_configuration_vs_protection_measure_parameter():
         x=alt.X(
             f"{param_name}:O",
             title=f"{param_name} til {type_name}{param_unit}",
-            axis=alt.Axis(labelAngle=0)
+            axis=alt.Axis(labelAngle=0, grid=True, bandPosition=1.125)
         ),
-        xOffset=alt.XOffset("Fabrikktype:N"),
+        xOffset=alt.XOffset(
+            "Fabrikktype:N",
+            scale=alt.Scale(domain=present_facility_types)
+        ),
         y=alt.Y(
             "sum(Antall etablert):Q",
             title="Etablerte fabrikker",
@@ -100,7 +104,8 @@ def plot_facility_configuration_vs_protection_measure_parameter():
             ),
             scale=alt.Scale(
                 scheme="set2"
-            )
+            ),
+            sort=None
         ),
         order=alt.Order("Ødelagt:N", sort="ascending"),
         stroke=alt.Stroke(
@@ -121,6 +126,7 @@ def plot_facility_configuration_vs_protection_measure_parameter():
         tooltip=[param_name, "FabrikkID", "Beskyttelsestiltak", "Ødelagt"],
     )
     protection_measures_df = df[df["Beskyttelsestiltak"] != ""]
+    present_protection_measures = list(dict.fromkeys(protection_measures_df["Beskyttelsestiltak"]))
     if protection_measures_df.empty:
         chart = bar # If no protection measures, just show the bar chart
     else:
@@ -141,7 +147,10 @@ def plot_facility_configuration_vs_protection_measure_parameter():
                 strokeWidth=2
             ).encode(
                 x=alt.X(f"{param_name}:O"),
-                xOffset=alt.XOffset("Fabrikktype:N"),
+                xOffset=alt.XOffset(
+                    "Fabrikktype:N",
+                    scale=alt.Scale(domain=present_facility_types)
+                ),
                 y=alt.Y(
                     "LabelPos:Q"
                 ),
@@ -149,6 +158,7 @@ def plot_facility_configuration_vs_protection_measure_parameter():
                 shape=alt.Shape(
                     "Beskyttelsestiltak:N",
                     scale=alt.Scale(
+                        domain=present_protection_measures,
                         range=["circle", "triangle-up", "diamond", "cross", "triangle-down"]
                     ),
                     title="Beskyttelsestiltak",
@@ -218,5 +228,53 @@ def plot_costs_vs_protection_measure_parameter():
             legend=alt.Legend(orient="bottom")
         ),
         tooltip=[f"{param_name} - {type_name}", "Kostnadstype", "Kostnad"]
+    )
+    st.altair_chart(chart)
+
+def plot_bio_production_vs_protection_measure_parameter():
+    type_name = st.session_state.varying_protection_measure_parameter_type_name
+    param_name = st.session_state.varying_protection_measure_parameter_param_name
+    param_unit = " [MNOK]" if param_name == "Kostnad" else ""
+    F = st.session_state.varying_protection_measure_parameter_params["F"]
+    K_f = st.session_state.varying_protection_measure_parameter_params["K_f"]
+    beta_f = st.session_state.varying_protection_measure_parameter_params["beta_f"]
+    R = st.session_state.varying_protection_measure_parameter_params["R"]
+    results = st.session_state.varying_protection_measure_parameter_results
+    param_values = []
+    bio_productions = []
+    for param_value, result in results.items():
+        param_values.append(param_value)
+        established_f = result["established_facilities"]
+        bio_production = sum(K_f[f] * beta_f[f] for f in range(F) if established_f[f])
+        bio_productions.append(bio_production)
+    df = pd.DataFrame({
+        f"{param_name} - {type_name}": param_values,
+        "Biobudsjett": R,
+        "Etablert bioproduksjon": bio_productions,
+    })
+    df_melted = df.melt(id_vars=[f"{param_name} - {type_name}"],
+                        value_vars=["Biobudsjett", "Etablert bioproduksjon"],
+                        var_name="Parameter",
+                        value_name="Produksjonskapasitet"
+    )
+    chart = alt.Chart(df_melted).mark_line(
+        point=True
+    ).encode(
+        x=alt.X(
+            f"{param_name} - {type_name}:O",
+            title=f"{param_name} til {type_name}{param_unit}",
+            axis=alt.Axis(labelAngle=0, grid=True)
+        ),
+        y=alt.Y(
+            "Produksjonskapasitet:Q",
+            title="Produksjonskapasitet [m³/dag]",
+            axis=alt.Axis(labelBaseline="middle")
+        ),
+        color=alt.Color(
+            "Parameter:N",
+            title="Parameter",
+            legend=alt.Legend(orient="bottom")
+        ),
+        tooltip=[f"{param_name} - {type_name}", "Parameter", "Produksjonskapasitet"]
     )
     st.altair_chart(chart)

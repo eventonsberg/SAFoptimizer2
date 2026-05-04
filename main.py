@@ -12,7 +12,8 @@ from sensitivity_analysis import display_sensitivity_analysis
 
 st.set_page_config(
     page_title="SAF optimizer",
-    page_icon=":material/travel:"
+    page_icon=":material/travel:",
+    layout="wide"
 )
 
 display_model_description()

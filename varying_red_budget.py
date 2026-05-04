@@ -3,7 +3,8 @@ from optimizer import solve_interdiction
 from varying_red_budget_visualization import (
     plot_remaining_production_capacity_vs_red_budget,
     plot_facility_configuration_vs_red_budget,
-    plot_costs_vs_red_budget
+    plot_costs_vs_red_budget,
+    plot_bio_production_vs_red_budget
 )
 
 def display_varying_red_budget(model_inputs):
@@ -63,6 +64,8 @@ def display_varying_red_budget(model_inputs):
             plot_facility_configuration_vs_red_budget()
             st.subheader("Kostnader")
             plot_costs_vs_red_budget()
+            st.subheader("Biodrivstoff")
+            plot_bio_production_vs_red_budget()
 
     if run_optimization:
         if min_budget > max_budget:
@@ -82,11 +85,14 @@ def display_varying_red_budget(model_inputs):
             st.session_state.varying_red_budget_params = {
                 "F": F,
                 "type_f": type_f,
+                "K_f": K_f,
                 "C_f": C_f,
+                "beta_f": beta_f,
                 "B": B,
                 "type_b": type_b,
                 "C_b": C_b,
-                "OE": OE
+                "OE": OE,
+                "R": R
             }
             st.session_state.varying_red_budget_results[T] = result
             with chart_placeholder.container():
@@ -96,3 +102,5 @@ def display_varying_red_budget(model_inputs):
                 plot_facility_configuration_vs_red_budget()
                 st.subheader("Kostnader")
                 plot_costs_vs_red_budget()
+                st.subheader("Biodrivstoff")
+                plot_bio_production_vs_red_budget()

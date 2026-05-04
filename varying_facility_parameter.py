@@ -4,7 +4,8 @@ from optimizer import solve_interdiction
 from varying_facility_parameter_visualization import (
     plot_remaining_production_capacity_vs_facility_parameter,
     plot_facility_configuration_vs_facility_parameter,
-    plot_costs_vs_facility_parameter
+    plot_costs_vs_facility_parameter,
+    plot_bio_production_vs_facility_parameter
 )
 
 def display_varying_facility_parameter(model_inputs):
@@ -87,6 +88,8 @@ def display_varying_facility_parameter(model_inputs):
             plot_facility_configuration_vs_facility_parameter()
             st.subheader("Kostnader")
             plot_costs_vs_facility_parameter()
+            st.subheader("Biodrivstoff")
+            plot_bio_production_vs_facility_parameter()
 
     if run_optimization:
         if min_param_value > max_param_value:
@@ -121,12 +124,15 @@ def display_varying_facility_parameter(model_inputs):
             st.session_state.varying_facility_parameter_params = {
                 "F": F,
                 "type_f": type_f,
+                "beta_f": beta_f,
                 "B": B,
                 "type_b": type_b,
                 "C_b": C_b,
-                "OE": OE
+                "OE": OE,
+                "R": R
             }
-            # Store C_f_mod in the result for correct cost plotting
+            # Store K_f_mod and C_f_mod in the result for correct plotting
+            result["K_f"] = K_f_mod.copy()
             result["C_f"] = C_f_mod.copy()
             st.session_state.varying_facility_parameter_results[param_value] = result
             with chart_placeholder.container():
@@ -136,3 +142,5 @@ def display_varying_facility_parameter(model_inputs):
                 plot_facility_configuration_vs_facility_parameter()
                 st.subheader("Kostnader")
                 plot_costs_vs_facility_parameter()
+                st.subheader("Biodrivstoff")
+                plot_bio_production_vs_facility_parameter()

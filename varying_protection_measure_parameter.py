@@ -4,7 +4,8 @@ from optimizer import solve_interdiction
 from varying_protection_measure_parameter_visualization import (
     plot_remaining_production_capacity_vs_protection_measure_parameter,
     plot_facility_configuration_vs_protection_measure_parameter,
-    plot_costs_vs_protection_measure_parameter
+    plot_costs_vs_protection_measure_parameter,
+    plot_bio_production_vs_protection_measure_parameter
 )
 
 def display_varying_protection_measure_parameter(model_inputs):
@@ -102,6 +103,8 @@ def display_varying_protection_measure_parameter(model_inputs):
             plot_facility_configuration_vs_protection_measure_parameter()
             st.subheader("Kostnader")
             plot_costs_vs_protection_measure_parameter()
+            st.subheader("Biodrivstoff")
+            plot_bio_production_vs_protection_measure_parameter()
 
     if run_optimization:
         if min_param_value > max_param_value:
@@ -139,10 +142,13 @@ def display_varying_protection_measure_parameter(model_inputs):
             st.session_state.varying_protection_measure_parameter_params = {
                 "F": F,
                 "type_f": type_f,
+                "K_f": K_f,
                 "C_f": C_f,
+                "beta_f": beta_f,
                 "B": B,
                 "type_b": type_b,
-                "OE": OE
+                "OE": OE,
+                "R": R
             }
             # Store C_b_mod in the result for correct cost plotting
             result["C_b"] = C_b_mod.copy()
@@ -154,3 +160,5 @@ def display_varying_protection_measure_parameter(model_inputs):
                 plot_facility_configuration_vs_protection_measure_parameter()
                 st.subheader("Kostnader")
                 plot_costs_vs_protection_measure_parameter()
+                st.subheader("Biodrivstoff")
+                plot_bio_production_vs_protection_measure_parameter()
