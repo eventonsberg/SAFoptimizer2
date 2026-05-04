@@ -5,27 +5,35 @@ potential_facilities = pd.DataFrame([
     {
         "Fabrikk": "Mongstad",
         "Kostnad": 0,
-        "Kapasitet": 500,
+        "Kapasitet": 2100,
         "Hardhet": 3.0,
         "Maks antall": 1,
         "Biodrivstoff": False
     }, 
     {
-        "Fabrikk": "SAF-anlegg (liten)",
-        "Kostnad": 20,
-        "Kapasitet": 20,
+        "Fabrikk": "Stort SAF-anlegg",
+        "Kostnad": 1200,
+        "Kapasitet": 170,
         "Hardhet": 3.0,
-        "Maks antall": 20,
+        "Maks antall": 3,
         "Biodrivstoff": True
     },
     {
-        "Fabrikk": "SAF-anlegg (stor)",
-        "Kostnad": 100,
-        "Kapasitet": 200,
+        "Fabrikk": "Mellomstort SAF-anlegg",
+        "Kostnad": 2400,
+        "Kapasitet": 85,
         "Hardhet": 3.0,
-        "Maks antall": 10,
+        "Maks antall": 6,
         "Biodrivstoff": True
-    }
+    },
+    {
+        "Fabrikk": "Lite SAF-anlegg",
+        "Kostnad": 2300,
+        "Kapasitet": 17,
+        "Hardhet": 3.0,
+        "Maks antall": 30,
+        "Biodrivstoff": True
+    },
 ])
 
 effectors = pd.DataFrame([
@@ -37,23 +45,29 @@ effectors = pd.DataFrame([
 
 potential_measures = pd.DataFrame([
     {
-        "Beskyttelsestiltak": "Minimalt luftvern",
-        "Kostnad": 30,
+        "Beskyttelsestiltak": "Omfattende luftvern",
+        "Kostnad": 2000,
         "Effektor": "Luftvernmissil",
-        "Antall effektorer": 6
+        "Antall effektorer": 36
     },
     {
-        "Beskyttelsestiltak": "Omfattende luftvern",
-        "Kostnad": 60,
+        "Beskyttelsestiltak": "Medium luftvern",
+        "Kostnad": 1100,
         "Effektor": "Luftvernmissil",
         "Antall effektorer": 18
-    }
+    },
+    {
+        "Beskyttelsestiltak": "Minimalt luftvern",
+        "Kostnad": 600,
+        "Effektor": "Luftvernmissil",
+        "Antall effektorer": 9
+    },
 ])
 
 restrictions = {
-    "Blått budsjett": 250,
-    "Rødt budsjett": 5,
-    "Biobudsjett": 400
+    "Blått budsjett": 10000,
+    "Rødt budsjett": 10,
+    "Biobudsjett": 500
 }
 
 def display_input_fields():
