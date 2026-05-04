@@ -70,7 +70,11 @@ def plot_facility_configuration_vs_red_budget():
                 "Ødelagt": False
             })
     df = pd.DataFrame(data)
-    present_facility_types = list(dict.fromkeys(df["Fabrikktype"].dropna()))
+    present_facility_types_in_df = set(df["Fabrikktype"].dropna())
+    present_facility_types = [
+        facility_type for facility_type in dict.fromkeys(type_f)
+        if facility_type in present_facility_types_in_df
+    ]
     bar = alt.Chart(df).mark_bar(
         strokeWidth=3,
         align="center"
@@ -99,7 +103,7 @@ def plot_facility_configuration_vs_red_budget():
             scale=alt.Scale(
                 scheme="set2"
             ),
-            sort=None
+            sort=present_facility_types
         ),
         order=alt.Order("Ødelagt:N", sort="ascending"),
         stroke=alt.Stroke(
@@ -120,7 +124,11 @@ def plot_facility_configuration_vs_red_budget():
         tooltip=["Rødt budsjett", "FabrikkID", "Beskyttelsestiltak", "Ødelagt"],
     )
     protection_measures_df = df[df["Beskyttelsestiltak"] != ""]
-    present_protection_measures = list(dict.fromkeys(protection_measures_df["Beskyttelsestiltak"]))
+    present_protection_measures_in_df = set(protection_measures_df["Beskyttelsestiltak"])
+    present_protection_measures = [
+        protection_measure for protection_measure in dict.fromkeys(type_b)
+        if protection_measure in present_protection_measures_in_df
+    ]
     if protection_measures_df.empty:
         chart = bar # If no protection measures, just show the bar chart
     else:
