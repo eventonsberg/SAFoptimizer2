@@ -11,62 +11,70 @@ potential_facilities = pd.DataFrame([
         "Biodrivstoff": False
     }, 
     {
-        "Fabrikk": "Stort SAF-anlegg",
-        "Kostnad": 1200,
+        "Fabrikk": "Bio-SAF (stor)",
+        "Kostnad": 3300,
         "Kapasitet": 170,
         "Hardhet": 3.0,
         "Maks antall": 3,
         "Biodrivstoff": True
     },
     {
-        "Fabrikk": "Mellomstort SAF-anlegg",
-        "Kostnad": 2400,
+        "Fabrikk": "Bio-SAF (mellomstor)",
+        "Kostnad": 3400,
         "Kapasitet": 85,
         "Hardhet": 3.0,
         "Maks antall": 6,
         "Biodrivstoff": True
     },
     {
-        "Fabrikk": "Lite SAF-anlegg",
-        "Kostnad": 2300,
+        "Fabrikk": "Bio-SAF (liten)",
+        "Kostnad": 2400,
         "Kapasitet": 17,
         "Hardhet": 3.0,
         "Maks antall": 30,
         "Biodrivstoff": True
+    },
+    {
+        "Fabrikk": "e-SAF",
+        "Kostnad": 4100,
+        "Kapasitet": 29,
+        "Hardhet": 3.0,
+        "Maks antall": 20,
+        "Biodrivstoff": False
     },
 ])
 
 effectors = pd.DataFrame([
     {
         "Effektor": "Luftvernmissil",
-        "Suksessrate": 0.7
+        "Suksessrate": 0.94
     }
 ])
 
 potential_measures = pd.DataFrame([
     {
         "Beskyttelsestiltak": "Omfattende luftvern",
-        "Kostnad": 2000,
+        "Kostnad": 19000,
         "Effektor": "Luftvernmissil",
         "Antall effektorer": 36
     },
     {
         "Beskyttelsestiltak": "Medium luftvern",
-        "Kostnad": 1100,
+        "Kostnad": 9500,
         "Effektor": "Luftvernmissil",
         "Antall effektorer": 18
     },
     {
         "Beskyttelsestiltak": "Minimalt luftvern",
-        "Kostnad": 600,
+        "Kostnad": 4800,
         "Effektor": "Luftvernmissil",
         "Antall effektorer": 9
     },
 ])
 
 restrictions = {
-    "Blått budsjett": 10000,
-    "Rødt budsjett": 10,
+    "Blått budsjett": 30000,
+    "Rødt budsjett": 15,
     "Biobudsjett": 500
 }
 
