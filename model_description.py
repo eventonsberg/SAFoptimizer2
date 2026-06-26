@@ -91,7 +91,7 @@ def display_model_description():
     )
     expander.latex(
         r"""
-        \max_{a,\, e} K_{\text{tot}}^*
+        \max_{e, i} K_{\text{tot}}^*
         """
     )
     expander.markdown(
