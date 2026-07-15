@@ -131,13 +131,27 @@ def plot_facility_configuration_vs_protection_measure_parameter():
     )
     protection_measures_df = df[df["Beskyttelsestiltak"] != ""]
     present_protection_measures_in_df = set(protection_measures_df["Beskyttelsestiltak"])
+    all_protection_measures = list(dict.fromkeys(type_b))
     present_protection_measures = [
-        protection_measure for protection_measure in dict.fromkeys(type_b)
+        protection_measure for protection_measure in all_protection_measures
         if protection_measure in present_protection_measures_in_df
     ]
     if protection_measures_df.empty:
         chart = bar # If no protection measures, just show the bar chart
     else:
+        shape_palette = [
+            "circle",
+            "triangle-up",
+            "diamond",
+            "cross",
+            "triangle-down",
+            "square",
+            "triangle-right",
+            "triangle-left"
+        ]
+        fixed_shape_range = [
+            shape_palette[i % len(shape_palette)] for i in range(len(all_protection_measures))
+        ]
         point = ( # Overlay symbols for protection measures on top of the bar chart
             alt.Chart(protection_measures_df).transform_window(
                 stack_index='row_number()',
@@ -166,13 +180,14 @@ def plot_facility_configuration_vs_protection_measure_parameter():
                 shape=alt.Shape(
                     "Beskyttelsestiltak:N",
                     scale=alt.Scale(
-                        domain=present_protection_measures,
-                        range=["circle", "triangle-up", "diamond", "cross", "triangle-down"]
+                        domain=all_protection_measures,
+                        range=fixed_shape_range
                     ),
                     title="Beskyttelsestiltak",
                     legend=alt.Legend(
                         orient="bottom",
                         direction="vertical",
+                        values=present_protection_measures,
                         symbolStrokeWidth=3
                     )
                 ),
