@@ -70,9 +70,10 @@ def plot_facility_configuration_vs_bio_budget():
                 "Ødelagt": False
             })
     df = pd.DataFrame(data)
+    all_facility_types = list(dict.fromkeys(type_f))
     present_facility_types_in_df = set(df["Fabrikktype"].dropna())
     present_facility_types = [
-        facility_type for facility_type in dict.fromkeys(type_f)
+        facility_type for facility_type in all_facility_types
         if facility_type in present_facility_types_in_df
     ]
     bar = alt.Chart(df).mark_bar(
@@ -98,12 +99,14 @@ def plot_facility_configuration_vs_bio_budget():
             title="Fabrikktype",
             legend=alt.Legend(
                 orient="bottom",
-                direction="vertical"
+                direction="vertical",
+                values=present_facility_types
             ),
             scale=alt.Scale(
+                domain=all_facility_types,
                 scheme="set2"
             ),
-            sort=present_facility_types
+            sort=all_facility_types
         ),
         order=alt.Order("Ødelagt:N", sort="ascending"),
         stroke=alt.Stroke(
