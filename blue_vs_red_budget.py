@@ -2,6 +2,7 @@ import streamlit as st
 from optimizer import solve_interdiction
 from blue_vs_red_budget_visualization import (
     plot_blue_vs_red_budget_heatmap,
+    plot_red_vs_blue_budget_heatmap,
     plot_production_capacity_vs_blue_budget_for_different_red_budgets,
     plot_production_capacity_vs_red_budget_for_different_blue_budgets
 )
@@ -85,6 +86,7 @@ def display_blue_vs_red_budget(model_inputs):
         with chart_placeholder.container():
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
             plot_blue_vs_red_budget_heatmap()
+            plot_red_vs_blue_budget_heatmap()
             plot_production_capacity_vs_blue_budget_for_different_red_budgets()
             plot_production_capacity_vs_red_budget_for_different_blue_budgets()
 
@@ -112,5 +114,6 @@ def display_blue_vs_red_budget(model_inputs):
                 with chart_placeholder.container():
                     st.subheader("Gjenværende produksjonskapasitet etter angrep")
                     plot_blue_vs_red_budget_heatmap()
+                    plot_red_vs_blue_budget_heatmap()
                     plot_production_capacity_vs_blue_budget_for_different_red_budgets()
                     plot_production_capacity_vs_red_budget_for_different_blue_budgets()
