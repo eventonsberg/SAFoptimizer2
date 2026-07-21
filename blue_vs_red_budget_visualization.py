@@ -20,12 +20,13 @@ def plot_blue_vs_red_budget_heatmap():
         x=alt.X(
             "Blått budsjett:O",
             title="Blått budsjett [MNOK]",
-            axis=alt.Axis(labelAngle=0)
+            axis=alt.Axis(labelAngle=0, labelAlign="center")
         ),
         y=alt.Y(
             "Rødt budsjett:O",
             title="Rødt budsjett [# trusseleffektorer]",
-            sort="descending"
+            sort="descending",
+            axis=alt.Axis(labelBaseline="middle")
         ),
         color=alt.Color(
             "Produksjonskapasitet:Q",
@@ -59,12 +60,13 @@ def plot_red_vs_blue_budget_heatmap():
         x=alt.X(
             "Rødt budsjett:O",
             title="Rødt budsjett [# trusseleffektorer]",
-            axis=alt.Axis(labelAngle=0)
+            axis=alt.Axis(labelAngle=0, labelAlign="center")
         ),
         y=alt.Y(
             "Blått budsjett:O",
             title="Blått budsjett [MNOK]",
-            sort="descending"
+            sort="descending",
+            axis=alt.Axis(labelBaseline="middle")
         ),
         color=alt.Color(
             "Produksjonskapasitet:Q",
@@ -100,7 +102,8 @@ def plot_production_capacity_vs_blue_budget_for_different_red_budgets():
         ),
         y=alt.Y(
             "Produksjonskapasitet:Q",
-            title="Produksjonskapasitet [m³/dag]"
+            title="Produksjonskapasitet [m³/dag]",
+            axis=alt.Axis(labelBaseline="middle")
         ),
         color=alt.Color(
             "Rødt budsjett:N",
@@ -134,7 +137,8 @@ def plot_production_capacity_vs_red_budget_for_different_blue_budgets():
         ),
         y=alt.Y(
             "Produksjonskapasitet:Q",
-            title="Produksjonskapasitet [m³/dag]"
+            title="Produksjonskapasitet [m³/dag]",
+            axis=alt.Axis(labelBaseline="middle")
         ),
         color=alt.Color(
             "Blått budsjett:N",
