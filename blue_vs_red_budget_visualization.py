@@ -35,7 +35,8 @@ def plot_blue_vs_red_budget_heatmap():
             legend=alt.Legend(
                 orient="bottom",
                 gradientLength=300,
-                titleLimit=300
+                titleLimit=300,
+                values=[0, 700, 1400, 2100, 2800]
             )
         ),
         tooltip=["Blått budsjett", "Rødt budsjett", "Produksjonskapasitet"],
@@ -75,7 +76,8 @@ def plot_red_vs_blue_budget_heatmap():
             legend=alt.Legend(
                 orient="bottom",
                 gradientLength=300,
-                titleLimit=300
+                titleLimit=300,
+                values=[0, 700, 1400, 2100, 2800]
             )
         ),
         tooltip=["Blått budsjett", "Rødt budsjett", "Produksjonskapasitet"],
