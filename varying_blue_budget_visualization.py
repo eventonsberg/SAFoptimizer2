@@ -247,6 +247,48 @@ def plot_costs_vs_blue_budget():
     )
     st.altair_chart(chart)
 
+def plot_effectors_used_vs_blue_budget():
+    F = st.session_state.varying_blue_budget_params["F"]
+    T = st.session_state.varying_blue_budget_params["T"]
+    results = st.session_state.varying_blue_budget_results
+    blue_budgets = []
+    effectors_used = []
+    for OE, result in results.items():
+        blue_budgets.append(OE)
+        effector_cost_f = result["effector_costs"]
+        effectors_used.append(sum(effector_cost_f[f] for f in range(F)))
+    df = pd.DataFrame({
+        "Blått budsjett": blue_budgets,
+        "Budsjett": T,
+        "Brukt": effectors_used,
+    })
+    df_melted = df.melt(id_vars=["Blått budsjett"],
+                        value_vars=["Budsjett", "Brukt"],
+                        var_name="Trusseleffektorer",
+                        value_name="# trusseleffektorer"
+    )
+    chart = alt.Chart(df_melted).mark_line(
+        point=True
+    ).encode(
+        x=alt.X(
+            "Blått budsjett:O",
+            title="Blått budsjett, Ø [# trusseleffektorer]",
+            axis=alt.Axis(labelAngle=0, grid=True)
+        ),
+        y=alt.Y(
+            "# trusseleffektorer:Q",
+            title="# trusseleffektorer",
+            axis=alt.Axis(labelBaseline="middle")
+        ),
+        color=alt.Color(
+            "Trusseleffektorer:N",
+            title="Trusseleffektorer",
+            legend=alt.Legend(orient="bottom")
+        ),
+        tooltip=["Blått budsjett", "Trusseleffektorer", "# trusseleffektorer"]
+    )
+    st.altair_chart(chart)
+
 def plot_bio_production_vs_blue_budget():
     F = st.session_state.varying_blue_budget_params["F"]
     K_f = st.session_state.varying_blue_budget_params["K_f"]

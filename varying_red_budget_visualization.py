@@ -248,6 +248,47 @@ def plot_costs_vs_red_budget():
     )
     st.altair_chart(chart)
 
+def plot_effectors_used_vs_red_budget():
+    F = st.session_state.varying_red_budget_params["F"]
+    results = st.session_state.varying_red_budget_results
+    red_budgets = []
+    effectors_used = []
+    for T, result in results.items():
+        red_budgets.append(T)
+        effector_cost_f = result["effector_costs"]
+        effectors_used.append(sum(effector_cost_f[f] for f in range(F)))
+    df = pd.DataFrame({
+        "Rødt budsjett": red_budgets,
+        "Budsjett": red_budgets,
+        "Brukt": effectors_used,
+    })
+    df_melted = df.melt(id_vars=["Rødt budsjett"],
+                        value_vars=["Budsjett", "Brukt"],
+                        var_name="Trusseleffektorer",
+                        value_name="# trusseleffektorer"
+    )
+    chart = alt.Chart(df_melted).mark_line(
+        point=True
+    ).encode(
+        x=alt.X(
+            "Rødt budsjett:O",
+            title="Rødt budsjett, T [# trusseleffektorer]",
+            axis=alt.Axis(labelAngle=0, grid=True)
+        ),
+        y=alt.Y(
+            "# trusseleffektorer:Q",
+            title="# trusseleffektorer",
+            axis=alt.Axis(labelBaseline="middle")
+        ),
+        color=alt.Color(
+            "Trusseleffektorer:N",
+            title="Trusseleffektorer",
+            legend=alt.Legend(orient="bottom")
+        ),
+        tooltip=["Rødt budsjett", "Trusseleffektorer", "# trusseleffektorer"]
+    )
+    st.altair_chart(chart)
+
 def plot_bio_production_vs_red_budget():
     F = st.session_state.varying_red_budget_params["F"]
     K_f = st.session_state.varying_red_budget_params["K_f"]

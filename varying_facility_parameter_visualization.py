@@ -21,7 +21,7 @@ def plot_remaining_production_capacity_vs_facility_parameter():
     ).encode(
         x=alt.X(
             f"{param_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            title=f"{param_name}en til fabrikktypen {facility_name}{param_unit}",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -88,7 +88,7 @@ def plot_facility_configuration_vs_facility_parameter():
     ).encode(
         x=alt.X(
             f"{param_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            title=f"{param_name}en til fabrikktypen {facility_name}{param_unit}",
             axis=alt.Axis(labelAngle=0, grid=True, bandPosition=1.125)
         ),
         xOffset=alt.XOffset(
@@ -240,7 +240,7 @@ def plot_costs_vs_facility_parameter():
     ).encode(
         x=alt.X(
             f"{param_name} - {facility_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            title=f"{param_name}en til fabrikktypen {facility_name}{param_unit}",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -254,6 +254,51 @@ def plot_costs_vs_facility_parameter():
             legend=alt.Legend(orient="bottom")
         ),
         tooltip=[f"{param_name} - {facility_name}", "Kostnadstype", "Kostnad"]
+    )
+    st.altair_chart(chart)
+
+def plot_effectors_used_vs_facility_parameter():
+    facility_name = st.session_state.varying_facility_parameter_f_name
+    param_name = st.session_state.varying_facility_parameter_p_name
+    param_unit = " [m³/dag]" if param_name == "Kapasitet" else " [MNOK]" if param_name == "Kostnad" else ""
+    F = st.session_state.varying_facility_parameter_params["F"]
+    T = st.session_state.varying_facility_parameter_params["T"]
+    results = st.session_state.varying_facility_parameter_results
+    param_values = []
+    effectors_used = []
+    for param_value, result in results.items():
+        param_values.append(param_value)
+        effector_cost_f = result["effector_costs"]
+        effectors_used.append(sum(effector_cost_f[f] for f in range(F)))
+    df = pd.DataFrame({
+        f"{param_name} - {facility_name}": param_values,
+        "Budsjett": T,
+        "Brukt": effectors_used,
+    })
+    df_melted = df.melt(id_vars=[f"{param_name} - {facility_name}"],
+                        value_vars=["Budsjett", "Brukt"],
+                        var_name="Trusseleffektorer",
+                        value_name="# trusseleffektorer"
+    )
+    chart = alt.Chart(df_melted).mark_line(
+        point=True
+    ).encode(
+        x=alt.X(
+            f"{param_name} - {facility_name}:O",
+            title=f"{param_name}en til fabrikktypen {facility_name}{param_unit}",
+            axis=alt.Axis(labelAngle=0, grid=True)
+        ),
+        y=alt.Y(
+            "# trusseleffektorer:Q",
+            title="# trusseleffektorer",
+            axis=alt.Axis(labelBaseline="middle")
+        ),
+        color=alt.Color(
+            "Trusseleffektorer:N",
+            title="Trusseleffektorer",
+            legend=alt.Legend(orient="bottom")
+        ),
+        tooltip=[f"{param_name} - {facility_name}", "Trusseleffektorer", "# trusseleffektorer"]
     )
     st.altair_chart(chart)
 
@@ -288,7 +333,7 @@ def plot_bio_production_vs_facility_parameter():
     ).encode(
         x=alt.X(
             f"{param_name} - {facility_name}:O",
-            title=f"{param_name} til {facility_name}{param_unit}",
+            title=f"{param_name}en til fabrikktypen {facility_name}{param_unit}",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(

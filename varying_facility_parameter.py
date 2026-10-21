@@ -5,6 +5,7 @@ from varying_facility_parameter_visualization import (
     plot_remaining_production_capacity_vs_facility_parameter,
     plot_facility_configuration_vs_facility_parameter,
     plot_costs_vs_facility_parameter,
+    plot_effectors_used_vs_facility_parameter,
     plot_bio_production_vs_facility_parameter
 )
 
@@ -88,6 +89,7 @@ def display_varying_facility_parameter(model_inputs):
             plot_facility_configuration_vs_facility_parameter()
             st.subheader("Kostnader")
             plot_costs_vs_facility_parameter()
+            plot_effectors_used_vs_facility_parameter()
             st.subheader("Biodrivstoff")
             plot_bio_production_vs_facility_parameter()
 
@@ -129,6 +131,7 @@ def display_varying_facility_parameter(model_inputs):
                 "type_b": type_b,
                 "C_b": C_b,
                 "OE": OE,
+                "T": T,
                 "R": R
             }
             # Store K_f_mod and C_f_mod in the result for correct plotting
@@ -142,5 +145,6 @@ def display_varying_facility_parameter(model_inputs):
                 plot_facility_configuration_vs_facility_parameter()
                 st.subheader("Kostnader")
                 plot_costs_vs_facility_parameter()
+                plot_effectors_used_vs_facility_parameter()
                 st.subheader("Biodrivstoff")
                 plot_bio_production_vs_facility_parameter()

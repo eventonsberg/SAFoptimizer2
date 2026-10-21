@@ -4,6 +4,7 @@ from varying_blue_budget_visualization import (
     plot_remaining_production_capacity_vs_blue_budget,
     plot_facility_configuration_vs_blue_budget,
     plot_costs_vs_blue_budget,
+    plot_effectors_used_vs_blue_budget,
     plot_bio_production_vs_blue_budget
 )
 
@@ -64,6 +65,7 @@ def display_varying_blue_budget(model_inputs):
             plot_facility_configuration_vs_blue_budget()
             st.subheader("Kostnader")
             plot_costs_vs_blue_budget()
+            plot_effectors_used_vs_blue_budget()
             st.subheader("Biodrivstoff")
             plot_bio_production_vs_blue_budget()
 
@@ -91,6 +93,7 @@ def display_varying_blue_budget(model_inputs):
                 "B": B,
                 "type_b": type_b,
                 "C_b": C_b,
+                "T": T,
                 "R": R
             }
             st.session_state.varying_blue_budget_results[OE] = result
@@ -101,5 +104,6 @@ def display_varying_blue_budget(model_inputs):
                 plot_facility_configuration_vs_blue_budget()
                 st.subheader("Kostnader")
                 plot_costs_vs_blue_budget()
+                plot_effectors_used_vs_blue_budget()
                 st.subheader("Biodrivstoff")
                 plot_bio_production_vs_blue_budget()
