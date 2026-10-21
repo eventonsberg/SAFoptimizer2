@@ -59,7 +59,7 @@ def display_varying_red_budget(model_inputs):
     run_optimization = st.button("Kjør optimering", type="primary", key="run_varying_red_budget")
     iteration_placeholder = st.empty()
     chart_placeholder = st.empty()
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         max_configs = st.number_input(
             "Antall konfigurasjoner per linje",
@@ -67,8 +67,14 @@ def display_varying_red_budget(model_inputs):
             value=18
         )
     with col2:
+        width = st.number_input(
+            "Bredde",
+            min_value=100,
+            value=1200
+        )
+    with col3:
         panel_height = st.number_input(
-            "Høyde på y-aksen",
+            "Høyde",
             min_value=10,
             value=150
         )
@@ -85,7 +91,7 @@ def display_varying_red_budget(model_inputs):
             st.subheader("Biodrivstoff")
             plot_bio_production_vs_red_budget()
             st.subheader("Fabrikkonfigurasjon - Oppdelt")
-            plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height)
+            plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height, width)
 
     if run_optimization:
         if min_budget > max_budget:
@@ -127,4 +133,4 @@ def display_varying_red_budget(model_inputs):
                 st.subheader("Biodrivstoff")
                 plot_bio_production_vs_red_budget()
                 st.subheader("Fabrikkonfigurasjon - Oppdelt")
-                plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height)
+                plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height, width)

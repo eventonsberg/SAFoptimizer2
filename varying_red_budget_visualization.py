@@ -350,7 +350,7 @@ def plot_bio_production_vs_red_budget():
     )
     st.altair_chart(chart)
 
-def plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height):
+def plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height, width):
     F = st.session_state.varying_red_budget_params["F"]
     type_f = st.session_state.varying_red_budget_params["type_f"]
     B = st.session_state.varying_red_budget_params["B"]
@@ -579,7 +579,7 @@ def plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_heigh
             )
         )
 
-        return (panel_bar + panel_point).properties(height=panel_height)
+        return (panel_bar + panel_point).properties(height=panel_height, width=width)
 
     panels = []
 
