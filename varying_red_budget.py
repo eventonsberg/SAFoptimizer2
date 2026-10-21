@@ -62,9 +62,9 @@ def display_varying_red_budget(model_inputs):
     col1, col2 = st.columns(2)
     with col1:
         max_configs = st.number_input(
-            "Maks antall konfigurasjoner per linje",
+            "Antall konfigurasjoner per linje",
             min_value=1,
-            value=20
+            value=18
         )
     with col2:
         panel_height = st.number_input(
