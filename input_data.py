@@ -12,7 +12,7 @@ potential_facilities = pd.DataFrame([
     }, 
     {
         "Fabrikk": "Bio-SAF (stor)",
-        "Kostnad": 3300,
+        "Kostnad": 3100,
         "Kapasitet": 170,
         "Hardhet": 3.0,
         "Maks antall": 3,
@@ -20,7 +20,7 @@ potential_facilities = pd.DataFrame([
     },
     {
         "Fabrikk": "Bio-SAF (mellomstor)",
-        "Kostnad": 3400,
+        "Kostnad": 3200,
         "Kapasitet": 85,
         "Hardhet": 3.0,
         "Maks antall": 6,
@@ -28,7 +28,7 @@ potential_facilities = pd.DataFrame([
     },
     {
         "Fabrikk": "Bio-SAF (liten)",
-        "Kostnad": 2400,
+        "Kostnad": 2300,
         "Kapasitet": 17,
         "Hardhet": 3.0,
         "Maks antall": 30,
@@ -36,7 +36,7 @@ potential_facilities = pd.DataFrame([
     },
     {
         "Fabrikk": "e-SAF",
-        "Kostnad": 4100,
+        "Kostnad": 3900,
         "Kapasitet": 29,
         "Hardhet": 3.0,
         "Maks antall": 20,
