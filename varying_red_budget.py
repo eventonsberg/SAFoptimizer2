@@ -70,13 +70,13 @@ def display_varying_red_budget(model_inputs):
         width = st.number_input(
             "Bredde",
             min_value=100,
-            value=1200
+            value=1300
         )
     with col3:
         panel_height = st.number_input(
             "Høyde",
             min_value=10,
-            value=150
+            value=130
         )
     if st.session_state.varying_red_budget_results:
         with chart_placeholder.container():
