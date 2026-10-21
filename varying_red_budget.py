@@ -6,7 +6,8 @@ from varying_red_budget_visualization import (
     display_facility_configuration_frequency,
     plot_costs_vs_red_budget,
     plot_effectors_used_vs_red_budget,
-    plot_bio_production_vs_red_budget
+    plot_bio_production_vs_red_budget,
+    plot_facility_configuration_vs_red_budget_SECTIONED
 )
 
 def display_varying_red_budget(model_inputs):
@@ -58,6 +59,19 @@ def display_varying_red_budget(model_inputs):
     run_optimization = st.button("Kjør optimering", type="primary", key="run_varying_red_budget")
     iteration_placeholder = st.empty()
     chart_placeholder = st.empty()
+    col1, col2 = st.columns(2)
+    with col1:
+        max_configs = st.number_input(
+            "Maks antall konfigurasjoner per linje",
+            min_value=1,
+            value=20
+        )
+    with col2:
+        panel_height = st.number_input(
+            "Høyde på y-aksen",
+            min_value=10,
+            value=150
+        )
     if st.session_state.varying_red_budget_results:
         with chart_placeholder.container():
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
@@ -70,6 +84,8 @@ def display_varying_red_budget(model_inputs):
             plot_effectors_used_vs_red_budget()
             st.subheader("Biodrivstoff")
             plot_bio_production_vs_red_budget()
+            st.subheader("Fabrikkonfigurasjon - Oppdelt")
+            plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height)
 
     if run_optimization:
         if min_budget > max_budget:
@@ -110,3 +126,5 @@ def display_varying_red_budget(model_inputs):
                 plot_effectors_used_vs_red_budget()
                 st.subheader("Biodrivstoff")
                 plot_bio_production_vs_red_budget()
+                st.subheader("Fabrikkonfigurasjon - Oppdelt")
+                plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_height)
