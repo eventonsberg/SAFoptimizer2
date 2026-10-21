@@ -19,12 +19,12 @@ def plot_blue_vs_red_budget_heatmap():
     chart = alt.Chart(df).mark_rect().encode(
         x=alt.X(
             "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             axis=alt.Axis(labelAngle=0, labelAlign="center")
         ),
         y=alt.Y(
             "Rødt budsjett:O",
-            title="Rødt budsjett [# trusseleffektorer]",
+            title="Rødt budsjett, T [# trusseleffektorer]",
             sort="descending",
             axis=alt.Axis(labelBaseline="middle")
         ),
@@ -60,12 +60,12 @@ def plot_red_vs_blue_budget_heatmap():
     chart = alt.Chart(df).mark_rect().encode(
         x=alt.X(
             "Rødt budsjett:O",
-            title="Rødt budsjett [# trusseleffektorer]",
+            title="Rødt budsjett, T [# trusseleffektorer]",
             axis=alt.Axis(labelAngle=0, labelAlign="center")
         ),
         y=alt.Y(
             "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             sort="descending",
             axis=alt.Axis(labelBaseline="middle")
         ),
@@ -99,7 +99,7 @@ def plot_production_capacity_vs_blue_budget_for_different_red_budgets():
     ).encode(
         x=alt.X(
             "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -109,7 +109,7 @@ def plot_production_capacity_vs_blue_budget_for_different_red_budgets():
         ),
         color=alt.Color(
             "Rødt budsjett:N",
-            title="Rødt budsjett [# trusseleffektorer]",
+            title="Rødt budsjett, T [# trusseleffektorer]",
             legend=alt.Legend(
                 orient="bottom",
                 titleLimit=300
@@ -134,7 +134,7 @@ def plot_production_capacity_vs_red_budget_for_different_blue_budgets():
     ).encode(
         x=alt.X(
             "Rødt budsjett:O",
-            title="Rødt budsjett [# trusseleffektorer]",
+            title="Rødt budsjett, T [# trusseleffektorer]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -144,7 +144,7 @@ def plot_production_capacity_vs_red_budget_for_different_blue_budgets():
         ),
         color=alt.Color(
             "Blått budsjett:N",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             legend=alt.Legend(
                 orient="bottom",
                 titleLimit=300

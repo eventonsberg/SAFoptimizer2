@@ -18,7 +18,7 @@ def plot_remaining_production_capacity_vs_blue_budget():
     ).encode(
         x=alt.X(
             "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -82,7 +82,7 @@ def plot_facility_configuration_vs_blue_budget():
     ).encode(
         x=alt.X(
             "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             axis=alt.Axis(labelAngle=0, grid=True, bandPosition=1.125)
         ),
         xOffset=alt.XOffset(
@@ -230,7 +230,7 @@ def plot_costs_vs_blue_budget():
     ).encode(
         x=alt.X(
             "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
@@ -275,7 +275,7 @@ def plot_bio_production_vs_blue_budget():
     ).encode(
         x=alt.X(
             "Blått budsjett:O",
-            title="Blått budsjett [MNOK]",
+            title="Blått budsjett, Ø [MNOK]",
             axis=alt.Axis(labelAngle=0, grid=True)
         ),
         y=alt.Y(
