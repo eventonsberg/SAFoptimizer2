@@ -4,6 +4,7 @@ from input_data import display_input_fields, format_model_inputs
 from single_solution import display_single_solution
 from varying_facility_parameter import display_varying_facility_parameter
 from varying_protection_measure_parameter import display_varying_protection_measure_parameter
+from varying_protection_cost import display_varying_protection_cost
 from varying_blue_budget import display_varying_blue_budget
 from varying_red_budget import display_varying_red_budget
 from blue_vs_red_budget import display_blue_vs_red_budget
@@ -27,6 +28,7 @@ analysis = st.sidebar.radio(
         "Enkeltløsning",
         "Varierende fabrikkparameter",
         "Varierende beskyttelsestiltak-parameter",
+        "Varierende beskyttelseskostnad",
         "Varierende blått budsjett",
         "Varierende rødt budsjett",
         "Blått vs. rødt budsjett",
@@ -44,6 +46,8 @@ elif analysis == "Varierende fabrikkparameter":
     display_varying_facility_parameter(model_inputs)
 elif analysis == "Varierende beskyttelsestiltak-parameter":
     display_varying_protection_measure_parameter(model_inputs)
+elif analysis == "Varierende beskyttelseskostnad":
+    display_varying_protection_cost(model_inputs)
 elif analysis == "Varierende blått budsjett":
     display_varying_blue_budget(model_inputs)
 elif analysis == "Varierende rødt budsjett":
