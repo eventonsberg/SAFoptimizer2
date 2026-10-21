@@ -3,6 +3,7 @@ from optimizer import solve_interdiction
 from varying_red_budget_visualization import (
     plot_remaining_production_capacity_vs_red_budget,
     plot_facility_configuration_vs_red_budget,
+    display_facility_configuration_frequency,
     plot_costs_vs_red_budget,
     plot_effectors_used_vs_red_budget,
     plot_bio_production_vs_red_budget
@@ -63,6 +64,7 @@ def display_varying_red_budget(model_inputs):
             plot_remaining_production_capacity_vs_red_budget()
             st.subheader("Fabrikkonfigurasjon")
             plot_facility_configuration_vs_red_budget()
+            display_facility_configuration_frequency()
             st.subheader("Kostnader")
             plot_costs_vs_red_budget()
             plot_effectors_used_vs_red_budget()
@@ -102,6 +104,7 @@ def display_varying_red_budget(model_inputs):
                 plot_remaining_production_capacity_vs_red_budget()
                 st.subheader("Fabrikkonfigurasjon")
                 plot_facility_configuration_vs_red_budget()
+                display_facility_configuration_frequency()
                 st.subheader("Kostnader")
                 plot_costs_vs_red_budget()
                 plot_effectors_used_vs_red_budget()

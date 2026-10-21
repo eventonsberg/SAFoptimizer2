@@ -194,6 +194,22 @@ def plot_facility_configuration_vs_red_budget():
         chart = bar + point
     st.altair_chart(chart)
 
+def display_facility_configuration_frequency():
+    F = st.session_state.varying_red_budget_params["F"]
+    type_f = st.session_state.varying_red_budget_params["type_f"]
+    results = st.session_state.varying_red_budget_results
+    configuration_counts = {}
+    for T, result in results.items():
+        established_f = tuple(result["established_facilities"])
+        if established_f not in configuration_counts:
+            configuration_counts[established_f] = 0
+        configuration_counts[established_f] += 1
+    df = pd.DataFrame([
+        {"Fabrikkonfigurasjon": ", ".join(f"{sum(1 for i in range(F) if config[i] and type_f[i] == type_f[f])} x {type_f[f]}" for f in range(F) if config[f] and type_f[f] not in [type_f[i] for i in range(f)]), "Frekvens": count}
+        for config, count in configuration_counts.items()
+    ])
+    st.dataframe(df, hide_index=True)
+
 def plot_costs_vs_red_budget():
     F = st.session_state.varying_red_budget_params["F"]
     C_f = st.session_state.varying_red_budget_params["C_f"]
