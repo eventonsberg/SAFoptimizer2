@@ -6,7 +6,8 @@ from varying_facility_parameter_visualization import (
     plot_facility_configuration_vs_facility_parameter,
     plot_costs_vs_facility_parameter,
     plot_effectors_used_vs_facility_parameter,
-    plot_bio_production_vs_facility_parameter
+    plot_bio_production_vs_facility_parameter,
+    plot_facility_configuration_vs_facility_parameter_SECTIONED
 )
 
 def display_varying_facility_parameter(model_inputs):
@@ -81,6 +82,26 @@ def display_varying_facility_parameter(model_inputs):
     run_optimization = st.button("Kjør optimering", type="primary", key="run_varying_facility_parameter")
     iteration_placeholder = st.empty()
     chart_placeholder = st.empty()
+    chart_placeholder = st.empty()
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        max_configs = st.number_input(
+            "Antall konfigurasjoner per linje",
+            min_value=1,
+            value=18
+        )
+    with col2:
+        width = st.number_input(
+            "Bredde",
+            min_value=100,
+            value=1300
+        )
+    with col3:
+        panel_height = st.number_input(
+            "Høyde",
+            min_value=10,
+            value=130
+        )
     if st.session_state.varying_facility_parameter_results:
         with chart_placeholder.container():
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
@@ -92,6 +113,8 @@ def display_varying_facility_parameter(model_inputs):
             plot_effectors_used_vs_facility_parameter()
             st.subheader("Biodrivstoff")
             plot_bio_production_vs_facility_parameter()
+            st.subheader("Fabrikkonfigurasjon - Oppdelt")
+            plot_facility_configuration_vs_facility_parameter_SECTIONED(max_configs, panel_height, width)
 
     if run_optimization:
         if min_param_value > max_param_value:
@@ -148,3 +171,5 @@ def display_varying_facility_parameter(model_inputs):
                 plot_effectors_used_vs_facility_parameter()
                 st.subheader("Biodrivstoff")
                 plot_bio_production_vs_facility_parameter()
+                st.subheader("Fabrikkonfigurasjon - Oppdelt")
+                plot_facility_configuration_vs_facility_parameter_SECTIONED(max_configs, panel_height, width)
