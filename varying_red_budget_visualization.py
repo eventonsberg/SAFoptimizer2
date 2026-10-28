@@ -513,7 +513,7 @@ def plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_heigh
         ]
 
         if panel_protection_df.empty:
-            return panel_bar
+            return panel_bar.properties(height=panel_height, width=width)
 
         panel_point = (
             alt.Chart(panel_protection_df)
