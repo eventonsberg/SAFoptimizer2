@@ -333,3 +333,294 @@ def plot_bio_production_vs_blue_budget():
         tooltip=["Blått budsjett", "Parameter", "Produksjonskapasitet"]
     )
     st.altair_chart(chart)
+
+
+def plot_facility_configuration_vs_blue_budget_SECTIONED(max_configs, panel_height, width):
+    F = st.session_state.varying_blue_budget_params["F"]
+    type_f = st.session_state.varying_blue_budget_params["type_f"]
+    B = st.session_state.varying_blue_budget_params["B"]
+    type_b = st.session_state.varying_blue_budget_params["type_b"]
+    results = st.session_state.varying_blue_budget_results
+    data = []
+    for budget, result in results.items():
+        established_f = result["established_facilities"]
+        implemented_bf = result["implemented_protection_measures"]
+        destroyed_f = result["destroyed_facilities"]
+        facility_counters = {}
+        for f in range(F):
+            if established_f[f]:
+                facility = type_f[f]
+                if facility not in facility_counters:
+                    facility_counters[facility] = 0
+                facility_counters[facility] += 1
+                protection_measure_string = ""
+                protection_measure_types = [type_b[b] for b in range(B) if implemented_bf[b][f]]
+                if protection_measure_types:
+                    protection_measure_string = ", ".join(protection_measure_types)
+                data.append({
+                    "Blått budsjett": budget,
+                    "Fabrikktype": facility,
+                    "FabrikkID": f"{facility} #{facility_counters[facility]}",
+                    "Antall etablert": 1,
+                    "Beskyttelsestiltak": protection_measure_string,
+                    "Ødelagt": destroyed_f[f]
+                })
+        if not any(established_f):
+            data.append({ # Avoid empty dataframe if no facilities are established
+                "Blått budsjett": budget,
+                "Fabrikktype": None,
+                "FabrikkID": None,
+                "Antall etablert": None,
+                "Beskyttelsestiltak": "",
+                "Ødelagt": False
+            })
+    df = pd.DataFrame(data)
+    all_facility_types = list(dict.fromkeys(type_f))
+    present_facility_types_in_df = set(df["Fabrikktype"].dropna())
+    present_facility_types = [
+        facility_type for facility_type in all_facility_types
+        if facility_type in present_facility_types_in_df
+    ]
+    all_protection_measures = list(dict.fromkeys(type_b))
+    present_protection_measures_in_df = set(df["Beskyttelsestiltak"].dropna())
+    present_protection_measures = [
+        measure for measure in all_protection_measures
+        if measure in present_protection_measures_in_df
+    ]
+
+    # Number of x-axis values in each panel
+    values_per_panel = max_configs
+
+    # Preserve the actual ordering of the budget values
+    budget_values = list(dict.fromkeys(df["Blått budsjett"].tolist()))
+
+    budget_groups = [
+        budget_values[i:i + values_per_panel]
+        for i in range(0, len(budget_values), values_per_panel)
+    ]
+
+    shape_palette = [
+        "circle",
+        "triangle-up",
+        "diamond",
+        "cross",
+        "triangle-down",
+        "square",
+        "triangle-right",
+        "triangle-left"
+    ]
+
+    fixed_shape_range = [
+        shape_palette[i % len(shape_palette)]
+        for i in range(len(all_protection_measures))
+    ]
+
+    def create_panel(panel_df, panel_budget_values, x_domain):
+        """
+        Create one layered chart for a subset of the blue-budget values.
+        """
+
+        panel_bar = (
+            alt.Chart(panel_df)
+            .mark_bar(
+                strokeWidth=3,
+                align="center"
+            )
+            .encode(
+                x=alt.X(
+                    "Blått budsjett:O",
+                    title="Blått budsjett, Ø [MNOK]",
+                    sort=x_domain,
+                    scale=alt.Scale(domain=x_domain),
+                    axis=alt.Axis(
+                        labelAngle=0,
+                        grid=True,
+                        bandPosition=1.125,
+                        labelExpr=f"indexof({panel_budget_values}, datum.value) >= 0 ? datum.label : ''"
+                    )
+                ),
+                xOffset=alt.XOffset(
+                    "Fabrikktype:N",
+                    scale=alt.Scale(domain=present_facility_types)
+                ),
+                y=alt.Y(
+                    "sum(Antall etablert):Q",
+                    title="Etablerte fabrikker",
+                    axis=alt.Axis(
+                        format="d",
+                        labelBaseline="middle"
+                    )
+                ),
+                color=alt.Color(
+                    "Fabrikktype:N",
+                    title="Fabrikktype",
+                    scale=alt.Scale(
+                        domain=all_facility_types,
+                        scheme="set2"
+                    ),
+                    sort=all_facility_types,
+                    legend=alt.Legend(
+                        orient="bottom",
+                        direction="vertical",
+                        values=present_facility_types
+                    )
+                ),
+                order=alt.Order(
+                    "Ødelagt:N",
+                    sort="ascending"
+                ),
+                stroke=alt.Stroke(
+                    "Ødelagt:N",
+                    scale=alt.Scale(
+                        domain=[True, False],
+                        range=["#c30101", "transparent"]
+                    ),
+                    legend=alt.Legend(
+                        title="Status",
+                        orient="bottom",
+                        values=[True],
+                        labelExpr="'Fabrikk ødelagt'",
+                        symbolStrokeWidth=3,
+                        symbolFillColor="transparent"
+                    )
+                ),
+                tooltip=[
+                    "Blått budsjett",
+                    "FabrikkID",
+                    "Beskyttelsestiltak",
+                    "Ødelagt"
+                ]
+            )
+        )
+
+        panel_protection_df = panel_df[
+            panel_df["Beskyttelsestiltak"] != ""
+        ]
+
+        if panel_protection_df.empty:
+            return panel_bar
+
+        panel_point = (
+            alt.Chart(panel_protection_df)
+            .transform_window(
+                stack_index="row_number()",
+                groupby=[
+                    "Blått budsjett",
+                    "Fabrikktype"
+                ],
+                sort=[
+                    alt.SortField(
+                        "Ødelagt",
+                        order="ascending"
+                    ),
+                    alt.SortField(
+                        "FabrikkID",
+                        order="ascending"
+                    )
+                ]
+            )
+            .transform_calculate(
+                LabelPos="datum.stack_index - 0.5"
+            )
+            .mark_point(
+                color="blue",
+                opacity=1,
+                size=80,
+                strokeWidth=2
+            )
+            .encode(
+                x=alt.X(
+                    "Blått budsjett:O",
+                    sort=x_domain
+                ),
+                xOffset=alt.XOffset(
+                    "Fabrikktype:N",
+                    scale=alt.Scale(
+                        domain=present_facility_types
+                    )
+                ),
+                y=alt.Y("LabelPos:Q"),
+                detail="FabrikkID:N",
+                shape=alt.Shape(
+                    "Beskyttelsestiltak:N",
+                    scale=alt.Scale(
+                        domain=all_protection_measures,
+                        range=fixed_shape_range
+                    ),
+                    title="Beskyttelsestiltak",
+                    legend=alt.Legend(
+                        orient="bottom",
+                        direction="vertical",
+                        values=present_protection_measures,
+                        symbolStrokeWidth=3
+                    )
+                ),
+                tooltip=[
+                    "Blått budsjett",
+                    "FabrikkID",
+                    "Beskyttelsestiltak",
+                    "Ødelagt"
+                ]
+            )
+        )
+
+        return (panel_bar + panel_point).properties(height=panel_height, width=width)
+
+    panels = []
+
+    for panel_budget_values in budget_groups:
+
+        panel_df = df[
+            df["Blått budsjett"].isin(panel_budget_values)
+        ]
+
+        # Pad the x-axis of the final panel so that it has
+        # the same number of positions as the other panels
+        x_domain = panel_budget_values.copy()
+
+        if len(x_domain) < values_per_panel:
+            n_missing = values_per_panel - len(x_domain)
+
+            # Assuming numeric, regularly spaced budget values
+            if len(budget_values) > 1:
+                step = budget_values[1] - budget_values[0]
+            else:
+                step = 1
+
+            last_value = x_domain[-1]
+
+            x_domain += [
+                last_value + step * i
+                for i in range(1, n_missing + 1)
+            ]
+
+        panels.append(
+            create_panel(
+                panel_df=panel_df,
+                panel_budget_values=panel_budget_values,
+                x_domain=x_domain,
+            )
+        )
+
+    chart = (
+        alt.vconcat(
+            *panels,
+            spacing=40
+        )
+        .resolve_scale(
+            x="independent",
+            y="shared",
+            color="shared",
+            shape="shared",
+            stroke="shared"
+        )
+        .resolve_legend(
+            color="shared",
+            shape="shared",
+            stroke="shared"
+        )
+    )
+
+    st.altair_chart(
+        chart
+    )

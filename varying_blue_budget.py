@@ -5,7 +5,8 @@ from varying_blue_budget_visualization import (
     plot_facility_configuration_vs_blue_budget,
     plot_costs_vs_blue_budget,
     plot_effectors_used_vs_blue_budget,
-    plot_bio_production_vs_blue_budget
+    plot_bio_production_vs_blue_budget,
+    plot_facility_configuration_vs_blue_budget_SECTIONED
 )
 
 def display_varying_blue_budget(model_inputs):
@@ -57,6 +58,25 @@ def display_varying_blue_budget(model_inputs):
     run_optimization = st.button("Kjør optimering", type="primary", key="run_varying_blue_budget")
     iteration_placeholder = st.empty()
     chart_placeholder = st.empty()
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        max_configs = st.number_input(
+            "Antall konfigurasjoner per linje",
+            min_value=1,
+            value=18
+        )
+    with col2:
+        width = st.number_input(
+            "Bredde",
+            min_value=100,
+            value=1300
+        )
+    with col3:
+        panel_height = st.number_input(
+            "Høyde",
+            min_value=10,
+            value=130
+        )
     if st.session_state.varying_blue_budget_results:
         with chart_placeholder.container():
             st.subheader("Gjenværende produksjonskapasitet etter angrep")
@@ -68,6 +88,8 @@ def display_varying_blue_budget(model_inputs):
             plot_effectors_used_vs_blue_budget()
             st.subheader("Biodrivstoff")
             plot_bio_production_vs_blue_budget()
+            st.subheader("Fabrikkonfigurasjon - Oppdelt")
+            plot_facility_configuration_vs_blue_budget_SECTIONED(max_configs, panel_height, width)
 
     if run_optimization:
         if min_budget > max_budget:
@@ -107,3 +129,5 @@ def display_varying_blue_budget(model_inputs):
                 plot_effectors_used_vs_blue_budget()
                 st.subheader("Biodrivstoff")
                 plot_bio_production_vs_blue_budget()
+                st.subheader("Fabrikkonfigurasjon - Oppdelt")
+                plot_facility_configuration_vs_blue_budget_SECTIONED(max_configs, panel_height, width)
