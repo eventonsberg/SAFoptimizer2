@@ -637,5 +637,6 @@ def plot_facility_configuration_vs_red_budget_SECTIONED(max_configs, panel_heigh
     )
 
     st.altair_chart(
-        chart
+        chart,
+        width="content"
     )
